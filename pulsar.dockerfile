@@ -217,13 +217,13 @@ RUN python setup.py install --prefix=$PSRHOME/astropy/install --record list.txt
 
 
 # hdf5
-ENV PATH $PATH:$PSRHOME/hdf5-1.8.15-patch1/hdf5/bin
+ENV PATH $PATH:$PSRHOME/hdf5-1.8.16/hdf5/bin
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRHOME/hdf5-1.8.15-patch1/hdf5/lib
 ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$PSRHOME/hdf5-1.8.15-patch1/hdf5/include
 WORKDIR $HOME
-RUN wget http://www.hdfgroup.org/ftp/HDF5/current/src/hdf5-1.8.15-patch1.tar.bz2
-RUN tar -xvf hdf5-1.8.15-patch1.tar.bz2 -C $PSRHOME
-WORKDIR $PSRHOME/hdf5-1.8.15-patch1
+RUN wget http://www.hdfgroup.org/ftp/HDF5/current/src/hdf5-1.8.16.tar.bz2
+RUN tar -xvf hdf5-1.8.16.tar.bz2 -C $PSRHOME
+WORKDIR $PSRHOME/hdf5-1.8.16
 RUN ./configure --enable-cxx
 RUN make \
     && make install
