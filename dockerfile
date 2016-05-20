@@ -234,11 +234,12 @@ RUN make \
 
 
 # astropy
-WORKDIR $PSRHOME
-RUN git clone https://github.com/astropy/astropy.git
-WORKDIR $PSRHOME/astropy
-USER root
-RUN python setup.py install --record list.txt
+#ENV PATH $PATH:$PSRHOME/astropy/install/bin
+#ENV PYTHONPATH $PYTHONPATH:$PSRHOME/astropy/install/lib/python2.7/site-packages/
+#WORKDIR $PSRHOME
+#RUN git clone https://github.com/astropy/astropy.git
+#WORKDIR $PSRHOME/astropy
+#RUN python setup.py install --prefix=$PSRHOME/astropy/install --record list.txt
 
 
 # hdf5
@@ -279,10 +280,9 @@ RUN python setup.py install --record list.txt
 ENV PATH $PATH:$PSRHOME/ds9-7.4
 RUN wget http://ds9.si.edu/download/linux64/ds9.linux64.7.4.tar.gz
 RUN tar -xvf ds9.linux64.7.4.tar.gz -C $PSRHOME
-WORKDIR $PSRHOME
-RUN mkdir ds9-7.4
-RUN mv ds9 ds9-7.4/
-
+RUN ./configure --prefix=$PSRHOME/h5check-2.0.1/install
+RUN make  \
+    && make install
 
 # psrcat
 ENV PSRCAT_FILE $PSRHOME/psrcat_tar/psrcat.db
@@ -302,7 +302,7 @@ RUN git clone git://git.code.sf.net/p/tempo/tempo
 WORKDIR $PSRHOME/tempo
 # NEED TO REPLACE OBSYS.DAT FILE -> GIT???!!!
 RUN ./prepare \
-    && ./configure --prefix=$PSRHOME/tempo/install \
+    && ./configure --prefix=/home/kat/pulsar_software/tempo/install \
     && make \
     && make install
 
@@ -345,5 +345,3 @@ RUN ./prepare \
 #src-highlite
 #wapp2psrfits
 #fv
-#pyephem
-
