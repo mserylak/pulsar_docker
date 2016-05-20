@@ -1,0 +1,241 @@
+FROM sdp-ingest5.kat.ac.za:5000/docker-base-gpu
+
+MAINTAINER Christopher Schollar "cschollar@ska.ac.za"
+
+# Suppress debconf warnings
+ENV DEBIAN_FRONTEND noninteractive
+
+#get psrdada
+USER root
+RUN apt-get update -y && apt-get install -y autotools-dev
+RUN apt-get install -y autoconf
+RUN apt-get install -y libfftw3-dev
+RUN apt-get install -y libcfitsio3-dev
+RUN apt-get install -y cvs
+RUN apt-get install -y libtool
+RUN apt-get install -y lsof
+RUN apt-get install -y csh
+RUN apt-get install -y numactl
+RUN mkdir /usr/local/kat
+RUN chown kat:kat /usr/local/kat
+
+USER kat
+
+RUN mkdir /usr/local/kat/pulsar
+
+ENV PSRHOME /usr/local/kat/pulsar
+ENV LOGIN_ARCH linux_64
+ENV PACKAGES $PSRHOME/$LOGIN_ARCH
+ENV CFLAGS "-mtune=native -O3 -ffast-math -pthread -fPIC"
+ENV CXXFLAGS "-mtune=native -O3 -ffast-math -pthread"
+ENV CUDA_NVCC_FLAGS "-O3 -arch sm_30 -m64 -lineinfo"
+
+# psrcat
+RUN echo $HOME
+ENV HOME /home/kat
+WORKDIR $HOME
+ENV PSRCAT_FILE $PSRHOME/$LOGIN_ARCH/psrcat/psrcat.db
+ENV PATH $PATH:$PSRHOME/psrcat_tar
+RUN wget http://www.atnf.csiro.au/people/pulsar/psrcat/downloads/psrcat_pkg.tar.gz
+RUN tar -xvf psrcat_pkg.tar.gz -C $PSRHOME
+WORKDIR $PSRHOME/psrcat_tar
+RUN /bin/bash makeit
+RUN mkdir -p $PSRHOME/$LOGIN_ARCH/bin
+RUN cp psrcat $PSRHOME/$LOGIN_ARCH/bin/
+RUN mkdir -p $PSRHOME/$LOGIN_ARCH/psrcat
+RUN cp psrcat.db $PSRHOME/$LOGIN_ARCH/psrcat/
+
+# Tempo2
+ENV TEMPO2 $PSRHOME/$LOGIN_ARCH/tempo2
+ENV PATH $PATH:$TEMPO2/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:/usr/local/src/tempo2/T2runtime/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/src/tempo2/T2runtime/lib
+WORKDIR $PSRHOME
+RUN mkdir -p $PSRHOME/tempo2
+WORKDIR $PSRHOME/tempo2
+COPY ./tempo2 .
+
+USER root
+RUN chown -R kat:kat .
+
+USER kat
+#RUN cvs -z3 -d:pserver:anonymous@tempo2.cvs.sourceforge.net:/cvsroot/tempo2 co tempo2
+#WORKDIR $PSRHOME/tempo2
+#For some reason bootstrap fails on the first attempt with
+#./bootstrap: ./make_build_settings.sh: /bin/bash: bad interpreter: Text file busy
+#Then it works fine the second time...? Hence forcing the exit code 0
+#RUN sync
+RUN ./bootstrap
+#RUN sleep 5
+#RUN ./bootstrap; exit 0
+#RUN ./bootstrap
+
+#RUN ./configure --x-libraries=/usr/lib/x86_64-linux-gnu --with-cfitsio-lib-dir=$PSRHOME/cfitsio/install/lib --with-calceph=$PSRHOME/calceph-2.2.4/install/lib --enable-shared --enable-static --with-pic F77=gfortran CPPFLAGS="-I/home/kat/pulsar_software/calceph-2.2.4/install/include"
+RUN ./configure --x-libraries=/usr/lib/x86_64-linux-gnu --with-cfitsio-lib-dir=$PSRHOME/cfitsio/install/lib --enable-shared --enable-static --with-pic F77=gfortran CPPFLAGS="-I/home/kat/pulsar_software/calceph-2.2.4/install/include"
+RUN make clean
+RUN make -j 16
+RUN make install
+RUN make plugins -j 16
+RUN make plugins-install
+RUN mkdir -p $TEMPO2
+RUN rsync -at T2runtime/* $TEMPO2/
+
+###############################
+# PSRCHIVE
+RUN mkdir $PSRHOME/psrchive
+WORKDIR $PSRHOME/psrchive
+COPY ./psrchive .
+
+USER root
+RUN chown -R kat:kat .
+RUN apt-get -y install libx11-dev
+RUN apt-get -y install x11-common
+
+USER kat
+ENV PSRCHIVE $PSRHOME/psrchive
+ENV PATH $PATH:$PSRHOME/$LOGIN_ARCH/bin
+ENV PGPLOT_DIR $PSRHOME/pgplot
+ENV PGPLOT_FONT $PGPLOT_DIR/grfont.dat
+RUN ./configure --prefix=$PSRHOME/$LOGIN_ARCH
+RUN make clean
+RUN make -j 16
+RUN make libs
+RUN make install
+
+###############################
+# CUB library
+USER kat
+RUN mkdir $HOME/opt
+RUN mkdir $HOME/opt/cub-1.3.2
+WORKDIR $HOME/opt/cub-1.3.2
+COPY ./cub-1.3.2 .
+
+USER root
+RUN chown -R kat:kat .
+RUN chmod -R a+r .
+
+###############################
+# PSRDADA build 
+USER kat
+RUN touch $HOME/.cvspass
+RUN mkdir $PSRHOME/psrdada
+WORKDIR $PSRHOME/psrdada
+COPY ./psrdada .
+
+USER root
+RUN chown -R kat .
+RUN chown -R kat $PSRHOME/$LOGIN_ARCH
+RUN apt-get install -y libgsl0-dev
+RUN apt-get install -y hwloc
+RUN apt-get install -y libhwloc-dev
+
+ENV PSRHOME /usr/local/kat/pulsar
+ENV HOME /home/kat
+ENV PSRCAT_FILE $PSRHOME/psrcat_tar/psrcat.db
+ENV PATH $PATH:$PSRHOME/psrcat_tar
+ENV TEMPO2 $PSRHOME/tempo2/T2runtime
+ENV PATH $PATH:$PSRHOME/tempo2/T2runtime/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:/usr/local/src/tempo2/T2runtime/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/src/tempo2/T2runtime/lib
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/cuda-7.5/include
+RUN ./bootstrap
+RUN ./configure --prefix=$PSRHOME/$LOGIN_ARCH --with-hwloc-dir=/usr
+RUN make clean
+RUN make -j 16
+RUN make install
+
+###############################
+# SPEAD2
+USER kat
+RUN mkdir $PSRHOME/spead2
+WORKDIR $PSRHOME/spead2
+COPY ./spead2 .
+
+USER root
+RUN apt-get install -y libboost-program-options1.55.0
+RUN apt-get install -y libboost-program-options1.55-dev
+RUN chown -R kat .
+
+USER kat
+WORKDIR $PSRHOME/spead2/src
+RUN make -j 16
+RUN cp ./libspead2.a $PSRHOME/$LOGIN_ARCH/lib/
+RUN mkdir $PSRHOME/$LOGIN_ARCH/include/spead2
+RUN cp ./*.h $PSRHOME/$LOGIN_ARCH/include/spead2/
+RUN cp test_recv test_send test_ringbuffer spead2_bench spead2_recv $PSRHOME/$LOGIN_ARCH/bin/
+
+
+###############################
+# OFED
+USER kat
+RUN mkdir $PSRHOME/MLNX_OFED_LINUX-3.2-2.0.0.0-ubuntu14.04-x86_64
+WORKDIR $PSRHOME/MLNX_OFED_LINUX-3.2-2.0.0.0-ubuntu14.04-x86_64
+COPY ./MLNX_OFED_LINUX-3.2-2.0.0.0-ubuntu14.04-x86_64 .
+
+USER root
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+RUN mlnxcmd=$'\n\n' && ./mlnxofedinstall --without-fw-update --vma-eth --force --enable-affinity -vv <<< "$mlnxcmd"
+
+###############################
+# libvma
+#USER kat
+#RUN mkdir $PSRHOME/vmadeb
+#WORKDIR $PSRHOME/vmadeb
+#COPY ./libvma-6.9.1-0-x86_64.deb .
+
+#USER root
+#RUN apt-get install libnl1
+#RUN apt-get install libibverbs1
+#RUN apt-get install librdmacm1
+#RUN sudo dpkg -i libvma-6.9.1-0-x86_64.deb
+#RUN apt-get install -f
+
+###################################
+# SPIP Built
+USER kat
+RUN mkdir $PSRHOME/spip
+WORKDIR $PSRHOME/spip
+COPY ./spip .
+
+USER root
+RUN chown -R kat:kat .
+
+WORKDIR $PSRHOME/spip
+RUN ./bootstrap
+RUN ./configure --prefix=$PSRHOME/$LOGIN_ARCH --with-spead2-dir=$PSRHOME/$LOGIN_ARCH
+RUN make clean
+RUN make 
+RUN make install
+
+###################################
+# DSPSR Build
+USER kat
+RUN mkdir $PSRHOME/dspsr
+WORKDIR $PSRHOME/dspsr
+COPY ./dspsr .
+
+USER root
+RUN chown -R kat:kat .
+RUN chmod -R  a+rw .
+
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:/usr/local/kat/pulsar/include/
+ENV CPLUS_INCLUDE_PATH $CPLUS_INCLUDE_PATH:/usr/local/kat/pulsar/include/
+ENV PATH $PATH:/usr/local/kat/pulsar/include/
+ENV PGPLOT_DIR $PSRHOME/pgplot
+ENV PGPLOT_FONT $PGPLOT_DIR/grfont.dat
+ENV CFLAGS -lstdc++
+RUN ./bootstrap
+RUN ./configure --prefix=$PSRHOME/$LOGIN_ARCH
+RUN make clean
+run make -j 16
+run make install
+
+###################################
+# Capture Runtime
+RUN apt-get install screen
+
+WORKDIR $HOME
+COPY bf_disk_capture.sh .
+COPY hardware_cbf_4096chan_2pol.cfg .
+COPY hardware_cbf_4096chan_pol_y.cfg .
+COPY hardware_cbf_4096chan.cfg .

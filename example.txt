@@ -1,0 +1,1 @@
+docker run -d -P tomcat:7 - tomcat apache with port 8080 open

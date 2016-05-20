@@ -242,6 +242,12 @@ RUN make \
     && make install
 
 
+# ds9
+ENV PATH $PATH:$PSRHOME/ds9-7.4
+RUN wget http://ds9.si.edu/download/linux64/ds9.linux64.7.4.tar.gz
+RUN tar -xvf ds9.linux64.7.4.tar.gz -C $PSRHOME
+
+
 # psrcat
 ENV PSRCAT_FILE $PSRHOME/psrcat_tar/psrcat.db
 ENV PATH $PATH:$PSRHOME/psrcat_tar
@@ -280,3 +286,53 @@ WORKDIR $PSRHOME/tempo2
 #    && make install \
 #    && make plugins-install
 
+APLpy
+baudline_1.08_linux_x86_64
+bitstring-3.1.4
+briss-0.9
+casacore
+casa-release-4.6.0-el6
+clig-1.9.11.1
+cloog-0.18.4
+coast_guard
+coast_guard2
+ctags-5.8
+cub
+ddrescue-1.20
+ds9-7.3.2
+dspsr
+ephem-3.7.6.0
+fftw-2.1.5
+GPy
+h5check-2.0.1
+h5edit-1.3.1
+hdf5-1.8.15-patch1
+makems
+measures_data
+Montage
+mpfit
+n-spell
+peakutils
+presto
+proas-2.2.0
+psrchive
+psrfits2psrfits
+psrfits_utils
+pymc
+pyslalib
+python-casacore
+rpfits
+seaborn
+sigproc
+sigpyproc
+splot
+src-highlite
+stuffit520.611
+szip-2.1
+tempo
+tempo2
+tornado-4.3
+t_sky
+tvmet-1.7.2
+wapp2psrfits
+wsclean-1.11
