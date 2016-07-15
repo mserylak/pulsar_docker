@@ -1,3 +1,11 @@
+# Copyright (C) 2016 by Maciej Serylak
+# Licensed under the Academic Free License version 3.0
+# This program comes with ABSOLUTELY NO WARRANTY.
+# You are free to modify and redistribute this code as long
+# as you do not remove the above attribution and reasonably
+# inform receipients that you have modified the original work.
+
+
 FROM sdp-ingest5.kat.ac.za:5000/docker-base-gpu:latest
 
 
@@ -77,6 +85,7 @@ RUN apt-get -y install \
     libgd3 \
     libgeographiclib9 \
     libglib2.0-dev \
+    libgmp3-dev \
     libgsl0-dev \
     libgsl0ldbl \
     libhdf5-7 \
@@ -103,6 +112,8 @@ RUN apt-get -y install \
     libpth-dev \
     libreadline6 \
     libreadline6-dev \
+    libsocket++1 \
+    libsocket++-dev \
     libtool \
     libx11-dev \
     locate \
@@ -144,34 +155,34 @@ RUN apt-get -y install \
     tmux
 
 
-# Install python modules
-RUN /usr/bin/pip install pip -U && \
-    /usr/bin/pip install setuptools -U && \
-    /usr/bin/pip install ipython -U && \
-    /usr/bin/pip install six -U && \
-    /usr/bin/pip install h5py -U && \
-    /usr/bin/pip install numpy -U && \
-    /usr/bin/pip install fitsio -U && \
-    /usr/bin/pip install astropy -U && \
-    /usr/bin/pip install scipy -U && \
-    /usr/bin/pip install astroplan -U && \
-    /usr/bin/pip install APLpy -U && \
-    /usr/bin/pip install GPy -U && \
-    /usr/bin/pip install pyfits -U && \
-    /usr/bin/pip install bitstring -U && \
-    /usr/bin/pip install cycler -U && \
-    /usr/bin/pip install peakutils -U && \
-    /usr/bin/pip install pymc -U && \
-    /usr/bin/pip install seaborn -U
-
-
-RUN mkdir -p /home/kat/software && \
-    chown -R kat:kat /home/kat #&& \
-#    adduser kat sudo
-
-
 # Switch account to kat
 USER kat
+
+
+# Install python modules
+RUN pip install pip -U && \
+    pip install setuptools -U && \
+    pip install ipython -U && \
+    pip install six -U && \
+    pip install h5py -U && \
+    pip install numpy -U && \
+    pip install fitsio -U && \
+    pip install astropy -U && \
+    pip install scipy -U && \
+    pip install astroplan -U && \
+    pip install APLpy -U && \
+    pip install GPy -U && \
+    pip install pyfits -U && \
+    pip install bitstring -U && \
+    pip install cycler -U && \
+    pip install peakutils -U && \
+    pip install pymc -U && \
+    pip install seaborn -U && \
+    pip install lmfit -U && \
+    pip install pyephem -U
+
+
+RUN mkdir -p /home/kat/software #&& \
 
 
 # Define home
@@ -180,6 +191,15 @@ ENV HOME /home/kat
 
 # Path to the pulsar software installation directory
 ENV PSRHOME /home/kat/software
+
+
+# Python packages
+ENV PYTHONPATH $PYTHONPATH:$HOME/ve/lib/python2.7/site-packages
+ENV PYTHONPATH $PYTHONPATH:/usr/lib/python2.7/dist-packages
+
+
+# Putting symlink to libpython so PSRCHIVE configure script can find it
+RUN ln -s /usr/lib/x86_64-linux-gnu/libpython2.7.so $HOME/ve/lib/python2.7/libpython2.7.so
 
 
 # Set up OSTYPE
@@ -193,29 +213,6 @@ ENV PGPLOT_INCLUDES /usr/include
 ENV PGPLOT_BACKGROUND white
 ENV PGPLOT_FOREGROUND black
 ENV PGPLOT_DEV /xs
-#ENV FCOMPL gfortran
-#ENV PGPLOT_DIR $PSRHOME/pgplot
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRHOME/pgplot
-#ENV PGPLOT_FONT $PSRHOME/pgplot/grfont.dat
-#ENV PGPLOT_INCLUDES $PSRHOME/pgplot
-#ENV PGPLOT_DEV /xs
-#ENV PGPLOT_BACKGROUND white
-#ENV PGPLOT_FOREGROUND black
-#WORKDIR $PSRHOME
-#RUN wget ftp://ftp.astro.caltech.edu/pub/pgplot/pgplot5.2.tar.gz && \
-#    tar -xvf pgplot5.2.tar.gz -C $PSRHOME
-#WORKDIR $PSRHOME/pgplot
-#RUN /bin/sed -i 's/\! PSDRIV 1/ PSDRIV 1/g;s/\! PSDRIV 2/ PSDRIV 2/g;s/\! PSDRIV 3/ PSDRIV 3/g;s/\! PSDRIV 4/ PSDRIV 4/g;s/\! XWDRIV 1/ XWDRIV 1/g;s/\! XWDRIV 2/ XWDRIV 2/g' drivers.list && \
-#    /bin/bash makemake . linux g77_gcc_aout && \
-#    /bin/sed -i 's/FCOMPL=g77/FCOMPL=gfortran/g' makefile && \
-#    /bin/sed -i 's/FFLAGC=-Wall -O/FFLAGC=-Wall -fPIC -O/g' makefile && \
-#    /bin/sed -i 's/FFLAGD=-fno-backslash/FFLAGD=-fPIC -fno-backslash/g' makefile && \
-#    /bin/sed -i 's/CFLAGC=-DPG_PPU -O2 -I./CFLAGC=-DPG_PPU -fPIC -O2 -I./g' makefile && \
-#    /bin/sed -i 's/CFLAGD=-O2/CFLAGD=-fPIC -O2/g' makefile
-#RUN make && \
-#    make clean && \
-#    make cpg && \
-#    ld -shared -o libcpgplot.so --whole-archive libcpgplot.a
 
 
 # calceph
@@ -229,8 +226,7 @@ WORKDIR $PSRHOME/calceph-2.2.4
 RUN ./configure --prefix=$PSRHOME/calceph-2.2.4/install --with-pic --enable-shared --enable-static --enable-fortran --enable-thread && \
     make && \
     make check && \
-    make install && \
-    make clean
+    make install
 
 
 # ds9
@@ -300,17 +296,26 @@ ENV PSRCHIVE $PSRHOME/psrchive
 ENV PATH $PATH:$PSRCHIVE/install/bin
 ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$PSRCHIVE/install/include
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRCHIVE/install/lib
-WORKDIR $HOME
-RUN wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/.psrchive.cfg && \
-    chown kat:kat /home/kat/.psrchive.cfg
+ENV PYTHONPATH $PYTHONPATH:$PSRCHIVE/install/lib/python2.7/site-packages
 WORKDIR $PSRHOME
 RUN git clone git://git.code.sf.net/p/psrchive/code psrchive
-WORKDIR $PSRHOME/psrchive
+WORKDIR $PSRCHIVE/Base/Extensions/Pulsar
+RUN mv Telescopes.h Telescopes.h_ORIGINAL && \
+    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/Telescopes.h
+WORKDIR $PSRCHIVE/Base/Extensions
+RUN mv Telescopes.C Telescopes.C_ORIGINAL && \
+    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/Telescopes.C
+WORKDIR $PSRCHIVE/Util/tempo
+RUN mv itoa.C itoa.C_ORIGINAL && \
+    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/itoa.C
+WORKDIR $PSRCHIVE
 RUN ./bootstrap && \
-    ./configure --prefix=$PSRCHIVE/install --x-libraries=/usr/lib/x86_64-linux-gnu F77=gfortran && \
+    ./configure --prefix=$PSRCHIVE/install --x-libraries=/usr/lib/x86_64-linux-gnu --enable-shared --enable-static F77=gfortran && \
     make -j $(nproc) && \
     make && \
     make install
+WORKDIR /home/kat
+RUN wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/.psrchive.cfg
 
 
 # SOFA C-library
@@ -337,12 +342,7 @@ RUN sed -i 's|INSTALL_DIR = $(HOME)|INSTALL_DIR = $(PSRHOME)/sofa/20160503/f77/i
     make test
 
 
-# CUB
-RUN wget https://github.com/NVlabs/cub/archive/1.5.2.zip && \
-    mv 1.5.2.zip cub-1.5.2.zip
-
-
-# sigproc
+# SIGPROC
 ENV SIGPROC $PSRHOME/sigproc
 ENV PATH $PATH:$SIGPROC/install/bin
 ENV FC gfortran
@@ -351,7 +351,7 @@ ENV CC gcc
 ENV CXX g++
 WORKDIR $PSRHOME
 RUN git clone https://github.com/SixByNine/sigproc.git
-WORKDIR SIGPROC/src
+WORKDIR $SIGPROC/src
 RUN mv aliases.c aliases.c_ORIGINAL && \
     wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/aliases.c
 WORKDIR $SIGPROC
@@ -367,16 +367,331 @@ ENV PYTHONPATH $PYTHONPATH:$SIGPYPROC/lib/python
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$SIGPYPROC/lib/c
 WORKDIR $PSRHOME
 RUN git clone https://github.com/ewanbarr/sigpyproc.git
-USER root
+WORKDIR $PSRHOME/sigpyproc
 RUN python setup.py install --record list.txt
-USER kat
+
+
+# CUB
+ENV CUB $PSRHOME:cub-1.5.2
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH/$CUB
+WORKDIR $PSRHOME
+RUN wget https://github.com/NVlabs/cub/archive/1.5.2.zip && \
+    mv 1.5.2.zip cub-1.5.2.zip && \
+    unzip cub-1.5.2.zip
+
 
 # PSRDADA
 ENV PSRDADA $PSRHOME/psrdada
+ENV PATH $PATH:$PSRDADA/install/bin
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRDADA/install/lib
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$PSRDADA/install/include
 ENV CUDA_NVCC_FLAGS "-O3 -arch sm_30 -m64 -lineinfo -I$PSRHOME/cub-1.5.2"
 WORKDIR $PSRHOME
-RUN cvs -z3 -d:pserver:anonymous@psrdada.cvs.sourceforge.net:/cvsroot/psrdada co -P psrdada && \
-    ./bootstrap && \
+RUN cvs -z3 -d:pserver:anonymous@psrdada.cvs.sourceforge.net:/cvsroot/psrdada co -P psrdada
+WORKDIR $PSRHOME/psrdada
+RUN ./bootstrap && \
     ./configure --prefix=$PSRDADA/install --x-libraries=/usr/lib/x86_64-linux-gnu --with-sofa-lib-dir=$SOFA/20160503/c/install/lib --with-cuda-dir=/usr/local/cuda F77="gfortran" LDFLAGS="-L/usr/lib" LIBS="-lpgplot -lcpgplot -libverbs -lstdc++" CPPFLAGS="-I$PSRHOME/cub-1.5.2" && \
+    make -j $(nproc) && \
     make && \
     make install
+
+
+# szlib
+ENV SZIP $PSRHOME/szip-2.1
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$SZIP/install/lib
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$SZIP/install/include
+WORKDIR $PSRHOME
+RUN wget http://www.hdfgroup.org/ftp/lib-external/szip/2.1/src/szip-2.1.tar.gz && \
+    tar -xvvf szip-2.1.tar.gz
+WORKDIR $SZIP
+RUN ./configure --prefix=$SZIP/install && \
+    make && \
+    make install
+
+
+# h5check
+ENV H5CHECK $PSRHOME/h5check-2.0.1
+ENV PATH $PATH:$H5CHECK/install/bin
+WORKDIR $PSRHOME
+RUN wget https://www.hdfgroup.org/ftp/HDF5/tools/h5check/src/h5check-2.0.1.tar.gz && \
+    tar -xvvf h5check-2.0.1.tar.gz
+WORKDIR $H5CHECK
+RUN ./configure --prefix=$H5CHECK/install && \
+    make && \
+    make install
+
+
+# DAL
+ENV DAL $PSRHOME/DAL
+ENV PATH $PATH:$DAL/install/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$DAL/install/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$DAL/install/lib
+WORKDIR $PSRHOME
+RUN git clone https://github.com/nextgen-astrodata/DAL.git
+WORKDIR $DAL
+RUN mkdir build
+WORKDIR $DAL/build
+RUN cmake .. -DCMAKE_INSTALL_PREFIX=$DAL/install && \
+    make -j $(nproc) && \
+    make && \
+    make install
+
+
+# DSPSR
+ENV DSPSR $PSRHOME/dspsr
+ENV PATH $PATH:$DSPSR/install/bin
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$DSPSR/install/lib
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$DSPSR/install/include
+WORKDIR $PSRHOME
+RUN git clone git://git.code.sf.net/p/dspsr/code dspsr
+WORKDIR $DSPSR
+RUN ./bootstrap && \
+    echo "lump fits sigproc dada lofar_dal" > backends.list && \
+    ./configure --prefix=$DSPSR/install --x-libraries=/usr/lib/x86_64-linux-gnu --with-cuda-dir=/usr/local/cuda-7.5 --with-cuda-include-dir=/usr/local/cuda-7.5/include/ --with-cuda-lib-dir=//usr/local/cuda-7.5/lib64 CPPFLAGS="-I$DAL/install/include" LDFLAGS="-L$DAL/install/lib" && \
+    make -j $(nproc) && \
+    make && \
+    make install
+
+
+# clig
+ENV CLIG $PSRHOME/clig
+ENV PATH $PATH:$CLIG/instal/bin
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$CLIG/instal/lib
+WORKDIR $PSRHOME
+RUN wget http://bsdforge.com/projects/source/devel/clig/clig-1.9.11.2.tar.xz && \
+    tar -xvvf clig-1.9.11.2.tar.xz
+WORKDIR $CLIG
+RUN sed -i 's|prefix =/usr|prefix=$(CLIG)/instal|g' makefile && \
+    make && \
+    make install
+
+
+# CLooG
+ENV CLOOG $PSRHOME/cloog-0.18.4
+ENV PATH $PATH:$CLOOG/install/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$CLOOG/install/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$CLOOG/install/lib
+WORKDIR $PSRHOME
+RUN wget http://www.bastoul.net/cloog/pages/download/cloog-0.18.4.tar.gz && \
+    tar -xvvf cloog-0.18.4.tar.gz
+WORKDIR $CLOOG
+RUN ./configure --prefix=$CLOOG/install && \
+    make && \
+    make install
+
+
+# Ctags
+ENV CTAGS $PSRHOME/ctags-5.8
+ENV PATH $PATH:$CTAGS/install/bin
+WORKDIR $PSRHOME
+RUN wget http://prdownloads.sourceforge.net/ctags/ctags-5.8.tar.gz && \
+    tar -xvvf ctags-5.8.tar.gz
+WORKDIR $CTAGS
+RUN ./configure --prefix=$CTAGS/install && \
+    make && \
+    make install
+
+
+# GeographicLib
+ENV GEOLIB $PSRHOME/GeographicLib-1.46
+ENV PATH $PATH:$GEOLIB/install/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$GEOLIB/install/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$GEOLIB/install/lib
+ENV PYTHONPATH $PYTHONPATH:$GEOLIB/install/lib/python/site-packages
+WORKDIR $PSRHOME
+RUN wget http://downloads.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.46.tar.gz && \
+    tar -xvvf GeographicLib-1.46.tar.gz
+WORKDIR $GEOLIB
+RUN ./configure --prefix=$GEOLIB/install && \
+    make && \
+    make install
+
+
+# h5edit
+ENV H5EDIT $PSRHOME/h5edit-1.3.1
+ENV PATH $PATH:$H5EDIT/install/bin
+WORKDIR $PSRHOME
+RUN wget http://www.hdfgroup.org/ftp/HDF5/projects/jpss/h5edit/h5edit-1.3.1.tar.gz && \
+    tar -xvvf h5edit-1.3.1.tar.gz
+WORKDIR $H5EDIT
+RUN ./configure --prefix=$H5EDIT/install CFLAGS="-Doff64_t=__off64_t" LDFLAGS="-L/usr/lib/x86_64-linux-gnu" LIBS="-lhdf5 -lhdf5_hl" && \
+    make && \
+    make install
+
+
+# Leptonica
+ENV LEPTONICA $PSRHOME/leptonica-1.73
+ENV PATH $PATH:$LEPTONICA/install/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$LEPTONICA/install/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$LEPTONICA/install/lib
+WORKDIR $PSRHOME
+RUN wget http://www.leptonica.com/source/leptonica-1.73.tar.gz && \
+    tar -xvvf leptonica-1.73.tar.gz
+WORKDIR $LEPTONICA
+RUN ./configure --prefix=$LEPTONICA/install && \
+    make && \
+    make install
+
+
+# tvmet
+ENV TVMET $PSRHOME/tvmet-1.7.2
+ENV PATH $PATH:$TVMET/install/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$TVMET/install/include
+WORKDIR $PSRHOME
+RUN wget http://downloads.sourceforge.net/project/tvmet/Tar.Gz_Bz2%20Archive/1.7.2/tvmet-1.7.2.tar.bz2 && \
+    tar -xvvf tvmet-1.7.2.tar.bz2
+WORKDIR $TVMET
+RUN ./configure --prefix=$TVMET/install && \
+    make && \
+    make install
+
+
+# FFTW2
+ENV FFTW2 $PSRHOME/fftw-2.1.5
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$FFTW2/install/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$FFTW2/install/lib
+WORKDIR $PSRHOME
+RUN wget http://www.fftw.org/fftw-2.1.5.tar.gz && \
+    tar -xvvf fftw-2.1.5.tar.gz
+WORKDIR $FFTW2
+RUN ./configure --prefix=$FFTW2/install --enable-threads --enable-float && \
+    make -j $(nproc) && \
+    make && \
+    make install
+
+
+# fitsverify
+ENV FITSVERIFY $PSRHOME/fitsverify
+ENV PATH $PATH:$FITSVERIFY
+WORKDIR $PSRHOME
+RUN wget http://heasarc.gsfc.nasa.gov/docs/software/ftools/fitsverify/fitsverify-4.18.tar.gz && \
+    tar -xvvf fitsverify-4.18.tar.gz
+WORKDIR $FITSVERIFY
+RUN gcc -o fitsverify ftverify.c fvrf_data.c fvrf_file.c fvrf_head.c fvrf_key.c fvrf_misc.c -DSTANDALONE -I/usr/include -L/usr/lib/x86_64-linux-gnu -lcfitsio -lm -lnsl
+
+
+# PSRSALSA
+ENV PSRSALSA $PSRHOME/psrsalsa
+ENV PATH $PATH:$PSRSALSA/bin
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRSALSA/src/lib
+WORKDIR $PSRHOME
+RUN git clone https://github.com/weltevrede/psrsalsa.git
+WORKDIR $PSRSALSA
+RUN make
+
+
+# pypsrfits
+ENV PYPSRFITS $PSRHOME/pypsrfits
+WORKDIR $PSRHOME
+RUN git clone https://github.com/demorest/pypsrfits.git
+WORKDIR $PYPSRFITS
+RUN python setup.py install --record list.txt
+
+
+# PRESTO
+ENV PRESTO $PSRHOME/presto
+ENV PATH $PATH:$PRESTO/bin
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PRESTO/lib
+ENV PYTHONPATH $PYTHONPATH:$PRESTO/lib/python
+WORKDIR $PSRHOME
+RUN git clone https://github.com/scottransom/presto.git
+WORKDIR $PRESTO/src
+RUN make makewisdom && \
+    make prep && \
+    make
+WORKDIR $PRESTO/python
+RUN make
+
+
+# wapp2psrfits
+ENV WAPP2PSRFITS $PSRHOME/wapp2psrfits
+ENV PATH $PATH:$WAPP2PSRFITS
+WORKDIR $PSRHOME
+RUN git clone https://github.com/scottransom/wapp2psrfits.git
+WORKDIR $WAPP2PSRFITS
+RUN make
+
+
+# psrfits2psrfits
+ENV PSRFITS2PSRFITS $PSRHOME/psrfits2psrfits
+ENV PATH $PATH:$PSRFITS2PSRFITS
+WORKDIR $PSRHOME
+RUN git clone https://github.com/scottransom/psrfits2psrfits.git
+WORKDIR $PSRFITS2PSRFITS
+RUN make
+
+
+# psrfits_utils
+ENV PSRFITS_UTILS $PSRHOME/psrfits_utils
+ENV PATH $PATH:$PSRFITS_UTILS/install/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$PSRFITS_UTILS/install/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRFITS_UTILS/install/lib
+WORKDIR $PSRHOME
+RUN git clone https://github.com/scottransom/psrfits_utils.git
+WORKDIR $PSRFITS_UTILS
+RUN sed -i 's|-Werror foreign|-Werror foreign -Wno-extra-portability|g' configure.ac && \
+    ./prepare && \
+    ./configure --prefix=$PSRFITS_UTILS/install && \
+    make && \
+    make install
+
+
+# pyslalib
+ENV PYSLALIB $PSRHOME/pyslalib
+WORKDIR $PSRHOME
+RUN git clone https://github.com/scottransom/pyslalib.git
+WORKDIR $PYSLALIB
+RUN python setup.py install --record list.txt
+
+
+# Vpsr
+ENV VPSR $PSRHOME/Vpsr
+ENV PATH $PATH:$VPSR
+WORKDIR $PSRHOME
+RUN git clone https://github.com/ArisKarastergiou/Vpsr.git
+WORKDIR $VPSR
+
+
+# # coast_guard
+# ENV COAST_GUARD $PSRHOME/coast_guard
+# ENV PATH $PATH:$COAST_GUARD
+# ENV COASTGUARD_CFG COAST_GUARD/configurations
+# ENV PYTHONPATH $PYTHONPATH:$COAST_GUARD
+# WORKDIR $PSRHOME
+# RUN git clone https://github.com/plazar/coast_guard.git
+# WORKDIR $COAST_GUARD
+# RUN mv utils.py utils.py_ORIGINAL && \
+#     wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/utils.py
+
+
+WORKDIR $PSRHOME
+
+
+#  # 
+#  ENV  $PSRHOME/
+#  ENV PATH $PATH:$ /install/bin
+#  ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$ /install/include
+#  ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$ /install/lib
+#  ENV PYTHONPATH $PYTHONPATH:$ /install/lib/python/site-packages
+#  WORKDIR $PSRHOME
+#  RUN wget   && \
+#      tar -xvvf 
+#  WORKDIR $
+#  RUN ./configure --prefix=$ /install && \
+#      make && \
+#      make install
+
+# multinest
+# ppgplot-1.4
+# rpfits
+# makems
+# katdal
+# katpoint
+# katpulse
+# katsdpscripts
+# katversion
+# wsclean-1.11
+# measures_data
+# casacore
+# casa-release-4.6.0-el6
+# python-casacore - pip install python-casacore -U
