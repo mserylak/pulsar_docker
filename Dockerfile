@@ -695,3 +695,107 @@ WORKDIR $PSRHOME
 # casacore
 # casa-release-4.6.0-el6
 # python-casacore - pip install python-casacore -U
+
+
+# katpoint
+ENV KATPOINT $PSRHOME/katpoint
+WORKDIR $PSRHOME
+RUN git clone https://katpull:katpull4git@github.com/ska-sa/katpoint.git
+WORKDIR $KATPOINT
+RUN python setup.py install --record list.txt
+
+
+# katdal
+ENV KATDAL $PSRHOME/katdal
+WORKDIR $PSRHOME
+RUN git clone https://katpull:katpull4git@github.com/ska-sa/katdal.git
+WORKDIR $KATDAL
+RUN python setup.py install --record list.txt
+
+
+# katconfig
+ENV KATCONFIG $PSRHOME/katconfig
+WORKDIR $PSRHOME
+RUN git clone https://katpull:katpull4git@github.com/ska-sa/katconfig.git
+
+
+# katsdpscripts
+ENV KATSDPSCRIPTS $PSRHOME/katsdpscripts
+WORKDIR $PSRHOME
+RUN git clone https://katpull:katpull4git@github.com/ska-sa/katsdpscripts.git
+WORKDIR $KATSDPSCRIPTS
+RUN python setup.py install --record list.txt
+
+
+# katsdpinfrastructure
+ENV KATSDPINFRASTRUCTURE $PSRHOME/
+WORKDIR $PSRHOME
+RUN git clone https://katpull:katpull4git@github.com/ska-sa/katsdpinfrastructure.git
+
+
+# katpulse
+ENV KATPULSE $PSRHOME/katpulse
+WORKDIR $PSRHOME
+RUN git clone https://katpull:katpull4git@github.com/ska-sa/katpulse.git
+
+
+# casacore measures_data
+ENV MEASURESDATA $PSRHOME/measures_data
+WORKDIR $PSRHOME
+RUN mkdir measures_data
+WORKDIR $MEASURESDATA
+RUN wget ftp://ftp.astron.nl/outgoing/Measures/WSRT_Measures.ztar && \
+    tar -xvvf WSRT_Measures.ztar
+
+
+# casa
+ENV CASA $PSRHOME/casa-release-4.6.0-el6
+ENV PATH $PATH:$PSRHOME/casa-release-4.6.0-el6/bin
+WORKDIR $PSRHOME
+RUN wget https://svn.cv.nrao.edu/casa/distro/linux/release/el6/casa-release-4.6.0-el6.tar.gz && \
+    tar -xvvf casa-release-4.6.0-el6.tar.gz
+
+
+# casacore
+ENV CASACORE $PSRHOME/casacore
+ENV PATH $PATH:$CASACORE/build/install/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$CASACORE/build/install/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$CASACORE/build/install/lib
+WORKDIR $PSRHOME
+RUN git clone https://github.com/casacore/casacore.git
+WORKDIR $CASACORE
+RUN mkdir build
+WORKDIR $CASACORE/build
+RUN cmake .. -DCMAKE_INSTALL_PREFIX=$CASACORE/build/install -DCMAKE_BUILD_PYTHON=ON -DCMAKE_BUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TESTING=ON -DCMAKE_CASA_BUILD=ON -DCMAKE_CMAKE_BUILD_TYPE=Release -DCMAKE_ENABLE_SHARED=ON -DCMAKE_USE_FFTW3=ON -DCMAKE_USE_HDF5=ON -DCMAKE_USE_OPENMP=ON -DCMAKE_USE_STACKTRACE=ON -DCMAKE_USE_THREADS=ON && \
+    make -j $(nproc) && \
+    make && \
+    make install
+
+
+# python-casacore
+ENV PYTHON_CASACORE $PSRHOME/python-casacore
+WORKDIR $PSRHOME
+RUN git clone https://github.com/casacore/python-casacore.git
+WORKDIR $PYTHON_CASACORE
+RUN python setup.py install --record list.txt
+
+
+#  # 
+#  ENV  $PSRHOME/
+#  ENV PATH $PATH:$ /install/bin
+#  ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$ /install/include
+#  ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$ /install/lib
+#  ENV PYTHONPATH $PYTHONPATH:$ /install/lib/python/site-packages
+#  WORKDIR $PSRHOME
+#  RUN wget   && \
+#      tar -xvvf 
+#  WORKDIR $
+#  RUN ./configure --prefix=$ /install && \
+#      make && \
+#      make install
+
+
+# makems
+# wsclean-1.11
+# pulsar_up
+# scripts
