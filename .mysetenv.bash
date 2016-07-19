@@ -66,7 +66,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CLIG/instal/lib
 export CLOOG=$PSRHOME/cloog-0.18.4
 export PATH=$PATH:$CLOOG/install/bin
 export C_INCLUDE_PATH=$C_INCLUDE_PATH:$CLOOG/install/include
-export LD_LIBRARY_PATH $LD_LIBRARY_PATH:$CLOOG/install/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CLOOG/install/lib
 export CTAGS=$PSRHOME/ctags-5.8
 export PATH=$PATH:$CTAGS/install/bin
 export GEOLIB=$PSRHOME/GeographicLib-1.46
