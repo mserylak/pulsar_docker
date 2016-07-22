@@ -152,7 +152,6 @@ RUN wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/.mysete
     source .mysetenv.bash
 
 
-
 # Define home, psrhome, software, OSTYPE and create the directory
 RUN mkdir -p /home/kat/software
 
