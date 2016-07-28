@@ -12,8 +12,10 @@ FROM sdp-ingest5.kat.ac.za:5000/docker-base-gpu:latest
 MAINTAINER Maciej Serylak "mserylak@ska.ac.za"
 
 
-# Switch account to root
+# Switch account to root and adding user accounts and password
 USER root
+RUN echo "kat:kat" | chpasswd
+RUN echo "root:Docker!" | chpasswd
 
 
 # Create space for ssh deamon and update the system
@@ -746,12 +748,11 @@ RUN mv utils.py utils.py_ORIGINAL && \
 # clean downloaded source codes
 WORKDIR $PSRHOME
 RUN rm -rf ./*.bz2 ./*.gz ./*.xz ./*.ztar ./*.zip
-words
+
+
+# Run sshd server and expose port 22
 USER root
-RUN echo "kat:kat" | chpasswd
-RUN echo "root:Docker!" | chpasswd
-
-
-# Run sshd server
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]
+USER kat
+WORKDIR $HOME
