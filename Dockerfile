@@ -746,3 +746,12 @@ RUN mv utils.py utils.py_ORIGINAL && \
 # clean downloaded source codes
 WORKDIR $PSRHOME
 RUN rm -rf ./*.bz2 ./*.gz ./*.xz ./*.ztar ./*.zip
+words
+USER root
+RUN echo "kat:kat" | chpasswd
+RUN echo "root:Docker!" | chpasswd
+
+
+# Run sshd server
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"]
