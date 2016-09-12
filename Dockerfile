@@ -210,10 +210,10 @@ RUN wget http://www.imcce.fr/fr/presentation/equipes/ASD/inpop/calceph/calceph-2
     tar -xvvf ds9.linux64.7.4.tar.gz -C $PSRHOME/ds9-7.4 && \
     wget http://heasarc.gsfc.nasa.gov/FTP/software/lheasoft/fv/fv5.4_pc_linux64.tar.gz && \
     tar -xvvf fv5.4_pc_linux64.tar.gz -C $PSRHOME && \
-    wget http://www.iausofa.org/2016_0503_C/sofa_c-20160503.tar.gz && \
-    tar -xvvf sofa_c-20160503.tar.gz && \
-    wget http://www.iausofa.org/2016_0503_F/sofa_f-20160503.tar.gz && \
-    tar -xvvf sofa_f-20160503.tar.gz && \
+    wget http://www.iausofa.org/2016_0503_C/sofa_c-20160503_a.tar.gz && \
+    tar -xvvf sofa_c-20160503_a.tar.gz && \
+    wget http://www.iausofa.org/2016_0503_F/sofa_f-20160503_a.tar.gz && \
+    tar -xvvf sofa_f-20160503_a.tar.gz && \
     wget http://www.hdfgroup.org/ftp/lib-external/szip/2.1/src/szip-2.1.tar.gz && \
     tar -xvvf szip-2.1.tar.gz && \
     wget https://www.hdfgroup.org/ftp/HDF5/tools/h5check/src/h5check-2.0.1.tar.gz && \
@@ -369,18 +369,18 @@ RUN wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/.psrchi
 
 # SOFA C-library
 ENV SOFA $PSRHOME/sofa
-ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$SOFA/20160503/c/install/include
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$SOFA/20160503/c/install/lib
-WORKDIR $SOFA/20160503/c/src
-RUN sed -i 's|INSTALL_DIR = $(HOME)|INSTALL_DIR = $(PSRHOME)/sofa/20160503/c/install|g' makefile && \
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$SOFA/20160503_a/c/install/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$SOFA/20160503_a/c/install/lib
+WORKDIR $SOFA/20160503_a/c/src
+RUN sed -i 's|INSTALL_DIR = $(HOME)|INSTALL_DIR = $(PSRHOME)/sofa/20160503_a/c/install|g' makefile && \
     make && \
     make test
 
 
 # SOFA FORTRAN-library
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$SOFA/20160503/f77/install/lib
-WORKDIR $SOFA/20160503/f77/src
-RUN sed -i 's|INSTALL_DIR = $(HOME)|INSTALL_DIR = $(PSRHOME)/sofa/20160503/f77/install|g' makefile && \
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$SOFA/20160503_a/f77/install/lib
+WORKDIR $SOFA/20160503_a/f77/src
+RUN sed -i 's|INSTALL_DIR = $(HOME)|INSTALL_DIR = $(PSRHOME)/sofa/20160503_a/f77/install|g' makefile && \
     make && \
     make test
 
@@ -423,7 +423,7 @@ ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$PSRDADA/install/include
 ENV CUDA_NVCC_FLAGS "-O3 -arch sm_30 -m64 -lineinfo -I$PSRHOME/cub-1.5.2"
 WORKDIR $PSRHOME/psrdada
 RUN ./bootstrap && \
-    ./configure --prefix=$PSRDADA/install --x-libraries=/usr/lib/x86_64-linux-gnu --with-sofa-lib-dir=$SOFA/20160503/c/install/lib --with-cuda-dir=/usr/local/cuda F77="gfortran" LDFLAGS="-L/usr/lib" LIBS="-lpgplot -lcpgplot -libverbs -lstdc++" CPPFLAGS="-I$PSRHOME/cub-1.5.2" && \
+    ./configure --prefix=$PSRDADA/install --x-libraries=/usr/lib/x86_64-linux-gnu --with-sofa-lib-dir=$SOFA/20160503_a/c/install/lib --with-cuda-dir=/usr/local/cuda F77="gfortran" LDFLAGS="-L/usr/lib" LIBS="-lpgplot -lcpgplot -libverbs -lstdc++" CPPFLAGS="-I$PSRHOME/cub-1.5.2" && \
     make -j $(nproc) && \
     make && \
     make install
