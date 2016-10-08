@@ -1,4 +1,4 @@
-# pulsar_docker (stock_complete_suite)
+# pulsar_docker
 Builds a docker image for a pulsar analysis packages and few extras on Ubuntu 16.04 LTS.
 
 # Includes
