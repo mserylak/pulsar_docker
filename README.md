@@ -75,4 +75,4 @@ Check if container is running with docker ps -a. You can log in using **psr** as
     ssh -XY psr@localhost -p 2222
 
 # Issues
-Report problems to mserylak@gmail.com.
+Report problems to mserylak@ska.ac.za
