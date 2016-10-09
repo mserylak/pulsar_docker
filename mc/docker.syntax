@@ -17,6 +17,6 @@ context default
   keyword  whole  ONBUILD    yellow
 
 define  comment   brightred
-context linestart # \n comment
+context # \n comment
 
 context " " green
