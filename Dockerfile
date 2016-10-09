@@ -242,7 +242,7 @@ RUN echo "" >> .bashrc && \
     echo "if [ -e $HOME/.mysetenv.bash ]; then" >> .bashrc && \
     echo "   source $HOME/.mysetenv.bash" >> .bashrc && \
     echo "fi" >> .bashrc && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/.mysetenv.bash
+    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/bash/.mysetenv.bash
 
 
 # Downloading all source codes
@@ -354,7 +354,7 @@ RUN ./prepare && \
     make && \
     make install && \
     mv obsys.dat obsys.dat_ORIGINAL && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/obsys.dat
+    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo/obsys.dat
 
 
 # tempo2
@@ -372,8 +372,8 @@ RUN ./bootstrap && \
 WORKDIR $PSRHOME/tempo2/T2runtime/observatory
 RUN mv observatories.dat observatories.dat_ORIGINAL && \
     mv aliases aliases_ORIGINAL && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/observatories.dat && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/aliases
+    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo2/observatories.dat && \
+    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo2/aliases
 
 
 # PSRCHIVE
@@ -384,13 +384,13 @@ ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRCHIVE/install/lib
 ENV PYTHONPATH $PYTHONPATH:$PSRCHIVE/install/lib/python2.7/site-packages
 WORKDIR $PSRCHIVE/Base/Extensions/Pulsar
 RUN mv Telescopes.h Telescopes.h_ORIGINAL && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/Telescopes.h
+    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/psrchive/Telescopes.h
 WORKDIR $PSRCHIVE/Base/Extensions
 RUN mv Telescopes.C Telescopes.C_ORIGINAL && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/Telescopes.C
+    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/psrchive/Telescopes.C
 WORKDIR $PSRCHIVE/Util/tempo
 RUN mv itoa.C itoa.C_ORIGINAL && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/itoa.C
+    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/psrchive/itoa.C
 WORKDIR $PSRCHIVE
 RUN ./bootstrap && \
     ./configure --prefix=$PSRCHIVE/install --x-libraries=/usr/lib/x86_64-linux-gnu --enable-shared --enable-static F77=gfortran && \
@@ -398,7 +398,7 @@ RUN ./bootstrap && \
     make && \
     make install
 WORKDIR $HOME
-RUN wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/.psrchive.cfg
+RUN wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/psrchive/.psrchive.cfg
 
 
 # SOFA C-library
@@ -428,7 +428,7 @@ ENV CC gcc
 ENV CXX g++
 WORKDIR $SIGPROC/src
 RUN mv aliases.c aliases.c_ORIGINAL && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/aliases.c
+    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/sigproc/aliases.c
 WORKDIR $SIGPROC
 RUN ./bootstrap && \
     ./configure --prefix=$SIGPROC/install --x-libraries=/usr/lib/x86_64-linux-gnu --enable-shared LDFLAGS="-L"$TEMPO2"/lib" LIBS="-ltempo2" && \
@@ -607,7 +607,7 @@ RUN make prep && \
     make
 WORKDIR $PRESTO/python/ppgplot_src
 RUN mv _ppgplot.c _ppgplot.c_ORIGINAL && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/_ppgplot.c
+    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/ppgplot/_ppgplot.c
 WORKDIR $PRESTO/python
 RUN make
 
@@ -692,7 +692,7 @@ USER psr
 #WORKDIR $PYTHON_CASACORE
 ## This is a workaround as install complains about installing in non-specific directory.
 #RUN mv setup.py setup.py_ORIGINAL && \
-#    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/setup.py
+#    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/python-casacore/setup.py
 #USER root
 #RUN python setup.py install --record list.txt
 #USER psr
