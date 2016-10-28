@@ -185,7 +185,7 @@ RUN apt-get -y install \
     python-qt4-dev \
     screen \
     subversion \
-    swig \
+    swig2.0 \
     tcsh \
     tk \
     tk-dev \
@@ -287,6 +287,8 @@ RUN wget http://www.imcce.fr/fr/presentation/equipes/ASD/inpop/calceph/calceph-2
     tar -xvvf casa-release-4.6.0-el6.tar.gz && \
     wget http://downloads.sourceforge.net/project/wsclean/wsclean-1.12/wsclean-1.12.tar.bz2 && \
     tar -xvvf wsclean-1.12.tar.bz2 && \
+    wget http://bitbucket.org/eigen/eigen/get/3.2.10.tar.bz2 && \
+    tar -xvvf 3.2.10.tar.bz2 && \
     git clone https://github.com/SixByNine/psrxml.git && \
     git clone https://bitbucket.org/psrsoft/tempo2.git && \
     git clone git://git.code.sf.net/p/tempo/tempo && \
@@ -389,14 +391,23 @@ RUN mv observatories.dat observatories.dat_ORIGINAL && \
     wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo2/aliases
 
 
-## PSRCHIVE
-#ENV PSRCHIVE $PSRHOME/psrchive
-#ENV PATH $PATH:$PSRCHIVE/install/bin
-#ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$PSRCHIVE/install/include
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRCHIVE/install/lib
-#ENV PYTHONPATH $PYTHONPATH:$PSRCHIVE/install/lib/python2.7/site-packages
-#WORKDIR $PSRCHIVE
-#RUN ./bootstrap && \
+# Eigen
+ENV EIGEN $PSRHOME/eigen-eigen-b9cd8366d4e8
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$EIGEN/install/include/eigen3
+WORKDIR $PSRHOME/$eigen-eigen-b9cd8366d4e8
+RUN mkdir install && \
+    cmake -DCMAKE_INSTALL_PREFIX=$PSRHOME/$EIGEN/install .. &&\
+    make install
+
+
+# PSRCHIVE
+ENV PSRCHIVE $PSRHOME/psrchive
+ENV PATH $PATH:$PSRCHIVE/install/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$PSRCHIVE/install/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRCHIVE/install/lib
+ENV PYTHONPATH $PYTHONPATH:$PSRCHIVE/install/lib/python2.7/site-packages
+WORKDIR $PSRCHIVE
+RUN ./bootstrap && \
 #    ./configure --prefix=$PSRCHIVE/install --x-libraries=/usr/lib/x86_64-linux-gnu --enable-shared --enable-static F77=gfortran && \
 #    make -j $(nproc) && \
 #    make && \
