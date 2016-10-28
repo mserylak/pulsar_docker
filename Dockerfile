@@ -400,14 +400,14 @@ WORKDIR $PSRHOME/$EIGEN3
 #    make install
 
 
-# PSRCHIVE
-ENV PSRCHIVE $PSRHOME/psrchive
-ENV PATH $PATH:$PSRCHIVE/install/bin
-ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$PSRCHIVE/install/include
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRCHIVE/install/lib
-ENV PYTHONPATH $PYTHONPATH:$PSRCHIVE/install/lib/python2.7/site-packages
-WORKDIR $PSRCHIVE
-RUN ./bootstrap && \
+## PSRCHIVE
+#ENV PSRCHIVE $PSRHOME/psrchive
+#ENV PATH $PATH:$PSRCHIVE/install/bin
+#ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$PSRCHIVE/install/include
+#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRCHIVE/install/lib
+#ENV PYTHONPATH $PYTHONPATH:$PSRCHIVE/install/lib/python2.7/site-packages
+#WORKDIR $PSRCHIVE
+#RUN ./bootstrap && \
 #    ./configure --prefix=$PSRCHIVE/install --x-libraries=/usr/lib/x86_64-linux-gnu --enable-shared --enable-static F77=gfortran && \
 #    make -j $(nproc) && \
 #    make && \
