@@ -346,38 +346,6 @@ WORKDIR $PSRHOME/psrcat_tar
 RUN /bin/bash makeit
 
 
-# tempo
-ENV TEMPO $PSRHOME/tempo
-ENV PATH $PATH:$PSRHOME/tempo/bin
-WORKDIR $PSRHOME/tempo
-RUN ./prepare && \
-    ./configure --prefix=$PSRHOME/tempo && \
-    make && \
-    make install && \
-    mv obsys.dat obsys.dat_ORIGINAL && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo/obsys.dat
-
-
-# tempo2
-ENV TEMPO2 $PSRHOME/tempo2/T2runtime
-ENV PATH $PATH:$PSRHOME/tempo2/T2runtime/bin
-ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$PSRHOME/tempo2/T2runtime/include
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRHOME/tempo2/T2runtime/lib
-WORKDIR $PSRHOME/tempo2
-RUN sync && perl -pi -e 's/chmod \+x/#chmod +x/' bootstrap # Get rid of: returned a non-zero code: 126.
-RUN ./bootstrap && \
-#    ./configure --enable-float128 --x-libraries=/usr/lib/x86_64-linux-gnu --with-calceph=$CALCEPH/install/lib --enable-shared --enable-static --with-pic F77=gfortran CPPFLAGS="-I"$CALCEPH"/install/include" && \
-    ./configure --x-libraries=/usr/lib/x86_64-linux-gnu --with-calceph=$CALCEPH/install/lib --enable-shared --enable-static --with-pic F77=gfortran CPPFLAGS="-I"$CALCEPH"/install/include" && \
-    make && \
-    make install && \
-    make plugins-install
-WORKDIR $PSRHOME/tempo2/T2runtime/observatory
-RUN mv observatories.dat observatories.dat_ORIGINAL && \
-    mv aliases aliases_ORIGINAL && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo2/observatories.dat && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo2/aliases
-
-
 # PSRXML
 ENV PSRXML $PSRHOME/psrxml
 ENV PATH $PATH:$PSRXML/install/bin
@@ -390,6 +358,38 @@ RUN ./configure --prefix=$PSRXML/install && \
     make install
 
 
+## tempo
+#ENV TEMPO $PSRHOME/tempo
+#ENV PATH $PATH:$PSRHOME/tempo/bin
+#WORKDIR $PSRHOME/tempo
+#RUN ./prepare && \
+#    ./configure --prefix=$PSRHOME/tempo && \
+#    make && \
+#    make install && \
+#    mv obsys.dat obsys.dat_ORIGINAL && \
+#    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo/obsys.dat
+#
+#
+## tempo2
+#ENV TEMPO2 $PSRHOME/tempo2/T2runtime
+#ENV PATH $PATH:$PSRHOME/tempo2/T2runtime/bin
+#ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$PSRHOME/tempo2/T2runtime/include
+#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRHOME/tempo2/T2runtime/lib
+#WORKDIR $PSRHOME/tempo2
+#RUN sync && perl -pi -e 's/chmod \+x/#chmod +x/' bootstrap # Get rid of: returned a non-zero code: 126.
+#RUN ./bootstrap && \
+##    ./configure --enable-float128 --x-libraries=/usr/lib/x86_64-linux-gnu --with-calceph=$CALCEPH/install/lib --enable-shared --enable-static --with-pic F77=gfortran CPPFLAGS="-I"$CALCEPH"/install/include" && \
+#    ./configure --x-libraries=/usr/lib/x86_64-linux-gnu --with-calceph=$CALCEPH/install/lib --enable-shared --enable-static --with-pic F77=gfortran CPPFLAGS="-I"$CALCEPH"/install/include" && \
+#    make && \
+#    make install && \
+#    make plugins-install
+#WORKDIR $PSRHOME/tempo2/T2runtime/observatory
+#RUN mv observatories.dat observatories.dat_ORIGINAL && \
+#    mv aliases aliases_ORIGINAL && \
+#    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo2/observatories.dat && \
+#    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo2/aliases
+#
+#
 ## PSRCHIVE
 #ENV PSRCHIVE $PSRHOME/psrchive
 #ENV PATH $PATH:$PSRCHIVE/install/bin
