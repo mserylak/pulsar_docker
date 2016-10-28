@@ -391,10 +391,10 @@ RUN mv observatories.dat observatories.dat_ORIGINAL && \
     wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo2/aliases
 
 
-# Eigen 3
-ENV EIGEN3 $PSRHOME/eigen-eigen-b9cd8366d4e8
-ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$EIGEN3/install/include/eigen3
-WORKDIR $PSRHOME/$EIGEN3
+## Eigen 3
+#ENV EIGEN3 $PSRHOME/eigen-eigen-b9cd8366d4e8
+#ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$EIGEN3/install/include/eigen3
+#WORKDIR $PSRHOME/$EIGEN3
 #RUN mkdir $PSRHOME/$EIGEN3/install && \
 #    cmake -DCMAKE_INSTALL_PREFIX=$PSRHOME/$EIGEN3/install .. &&\
 #    make install
