@@ -358,18 +358,18 @@ RUN ./configure --prefix=$PSRXML/install && \
     make install
 
 
-## tempo
-#ENV TEMPO $PSRHOME/tempo
-#ENV PATH $PATH:$PSRHOME/tempo/bin
-#WORKDIR $PSRHOME/tempo
-#RUN ./prepare && \
-#    ./configure --prefix=$PSRHOME/tempo && \
-#    make && \
-#    make install && \
-#    mv obsys.dat obsys.dat_ORIGINAL && \
-#    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo/obsys.dat
-#
-#
+# tempo
+ENV TEMPO $PSRHOME/tempo
+ENV PATH $PATH:$PSRHOME/tempo/bin
+WORKDIR $PSRHOME/tempo
+RUN ./prepare && \
+    ./configure --prefix=$PSRHOME/tempo && \
+    make && \
+    make install && \
+    mv obsys.dat obsys.dat_ORIGINAL && \
+    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo/obsys.dat
+
+
 ## tempo2
 #ENV TEMPO2 $PSRHOME/tempo2/T2runtime
 #ENV PATH $PATH:$PSRHOME/tempo2/T2runtime/bin
