@@ -248,7 +248,7 @@ RUN echo "" >> .bashrc && \
 # Downloading all source codes
 WORKDIR $PSRHOME
 RUN wget http://www.imcce.fr/fr/presentation/equipes/ASD/inpop/calceph/calceph-2.3.0.tar.gz && \
-    tar -xvvf calceph-2.3.0.tar.gz -C $PSRHOME && \ 
+    tar -xvvf calceph-2.3.0.tar.gz -C $PSRHOME && \
     wget http://www.atnf.csiro.au/people/pulsar/psrcat/downloads/psrcat_pkg.tar.gz && \
     tar -xvf psrcat_pkg.tar.gz -C $PSRHOME && \
     wget http://ds9.si.edu/download/linux64/ds9.linux64.7.4.tar.gz && \
@@ -287,6 +287,7 @@ RUN wget http://www.imcce.fr/fr/presentation/equipes/ASD/inpop/calceph/calceph-2
 #    tar -xvvf casa-release-4.6.0-el6.tar.gz && \
 #    wget http://downloads.sourceforge.net/project/wsclean/wsclean-1.12/wsclean-1.12.tar.bz2 && \
 #    tar -xvvf wsclean-1.12.tar.bz2 && \
+    git clone https://github.com/SixByNine/psrxml.git && \
     git clone https://bitbucket.org/psrsoft/tempo2.git && \
     git clone git://git.code.sf.net/p/tempo/tempo && \
     git clone git://git.code.sf.net/p/psrchive/code psrchive && \
@@ -376,21 +377,24 @@ RUN mv observatories.dat observatories.dat_ORIGINAL && \
     wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo2/aliases
 
 
+# PSRXML
+ENV PSRXML $PSRHOME/psrxml
+ENV PATH $PATH:$PSRXML/install/bin
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRXML/install/lib
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$PSRXML/install/include
+WORKDIR $PSRXML
+RUN autoreconf --install --warnings=none
+RUN ./configure --prefix=$PSRXML/install && \
+    make && \
+    make install
+
+
 # PSRCHIVE
 ENV PSRCHIVE $PSRHOME/psrchive
 ENV PATH $PATH:$PSRCHIVE/install/bin
 ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$PSRCHIVE/install/include
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRCHIVE/install/lib
 ENV PYTHONPATH $PYTHONPATH:$PSRCHIVE/install/lib/python2.7/site-packages
-WORKDIR $PSRCHIVE/Base/Extensions/Pulsar
-RUN mv Telescopes.h Telescopes.h_ORIGINAL && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/psrchive/Telescopes.h
-WORKDIR $PSRCHIVE/Base/Extensions
-RUN mv Telescopes.C Telescopes.C_ORIGINAL && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/psrchive/Telescopes.C
-WORKDIR $PSRCHIVE/Util/tempo
-RUN mv itoa.C itoa.C_ORIGINAL && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/psrchive/itoa.C
 WORKDIR $PSRCHIVE
 RUN ./bootstrap && \
     ./configure --prefix=$PSRCHIVE/install --x-libraries=/usr/lib/x86_64-linux-gnu --enable-shared --enable-static F77=gfortran && \
@@ -426,9 +430,6 @@ ENV FC gfortran
 ENV F77 gfortran
 ENV CC gcc
 ENV CXX g++
-WORKDIR $SIGPROC/src
-RUN mv aliases.c aliases.c_ORIGINAL && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/sigproc/aliases.c
 WORKDIR $SIGPROC
 RUN ./bootstrap && \
     ./configure --prefix=$SIGPROC/install --x-libraries=/usr/lib/x86_64-linux-gnu --enable-shared LDFLAGS="-L"$TEMPO2"/lib" LIBS="-ltempo2" && \
@@ -655,7 +656,7 @@ ENV PATH $PATH:$VPSR
 ENV GPY $PSRHOME/GPy
 ENV PATH $PATH:$GPY
 WORKDIR $GPY
-# This is a workaround as install complains about installing in non-specific directory. 
+# This is a workaround as install complains about installing in non-specific directory.
 USER root
 RUN python setup.py install --record list.txt
 USER psr

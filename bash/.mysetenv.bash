@@ -57,6 +57,12 @@ export PATH=$PATH:$PSRHOME/tempo2/T2runtime/bin
 export C_INCLUDE_PATH=$C_INCLUDE_PATH:$PSRHOME/tempo2/T2runtime/include
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PSRHOME/tempo2/T2runtime/lib
 
+# PSRXML
+export PSRXML=$PSRHOME/psrxml
+export PATH=$PATH:$PSRXML/install/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PSRXML/install/lib
+export C_INCLUDE_PATH=$C_INCLUDE_PATH:$PSRXML/install/include
+
 # PSRCHIVE
 export PSRCHIVE=$PSRHOME/psrchive
 export PATH=$PATH:$PSRCHIVE/install/bin
