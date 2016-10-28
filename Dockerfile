@@ -377,17 +377,17 @@ ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$PSRHOME/tempo2/T2runtime/include
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRHOME/tempo2/T2runtime/lib
 WORKDIR $PSRHOME/tempo2
 RUN sync && perl -pi -e 's/chmod \+x/#chmod +x/' bootstrap # Get rid of: returned a non-zero code: 126.
-RUN ./bootstrap && \
-#    ./configure --enable-float128 --x-libraries=/usr/lib/x86_64-linux-gnu --with-calceph=$CALCEPH/install/lib --enable-shared --enable-static --with-pic F77=gfortran CPPFLAGS="-I"$CALCEPH"/install/include" && \
-    ./configure --x-libraries=/usr/lib/x86_64-linux-gnu --with-calceph=$CALCEPH/install/lib --enable-shared --enable-static --with-pic F77=gfortran CPPFLAGS="-I"$CALCEPH"/install/include" && \
-    make && \
-    make install && \
-    make plugins-install
-WORKDIR $PSRHOME/tempo2/T2runtime/observatory
-RUN mv observatories.dat observatories.dat_ORIGINAL && \
-    mv aliases aliases_ORIGINAL && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo2/observatories.dat && \
-    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo2/aliases
+#RUN ./bootstrap && \
+##    ./configure --enable-float128 --x-libraries=/usr/lib/x86_64-linux-gnu --with-calceph=$CALCEPH/install/lib --enable-shared --enable-static --with-pic F77=gfortran CPPFLAGS="-I"$CALCEPH"/install/include" && \
+#    ./configure --x-libraries=/usr/lib/x86_64-linux-gnu --with-calceph=$CALCEPH/install/lib --enable-shared --enable-static --with-pic F77=gfortran CPPFLAGS="-I"$CALCEPH"/install/include" && \
+#    make && \
+#    make install && \
+#    make plugins-install
+#WORKDIR $PSRHOME/tempo2/T2runtime/observatory
+#RUN mv observatories.dat observatories.dat_ORIGINAL && \
+#    mv aliases aliases_ORIGINAL && \
+#    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo2/observatories.dat && \
+#    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/tempo2/aliases
 
 
 ## PSRCHIVE
