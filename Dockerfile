@@ -409,7 +409,8 @@ ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRCHIVE/install/lib
 ENV PYTHONPATH $PYTHONPATH:$PSRCHIVE/install/lib/python2.7/site-packages
 WORKDIR $PSRCHIVE
 RUN ./bootstrap && \
-    ./configure --prefix=$PSRCHIVE/install --x-libraries=/usr/lib/x86_64-linux-gnu --with-psrxml-dir=$PSRXML/install --enable-shared --enable-static F77=gfortran LIBS="-lpsrxml -lxml2" && \
+#    ./configure --prefix=$PSRCHIVE/install --x-libraries=/usr/lib/x86_64-linux-gnu --with-psrxml-dir=$PSRXML/install --enable-shared --enable-static F77=gfortran LIBS="-lpsrxml -lxml2" && \
+    ./configure --prefix=$PSRCHIVE/install --x-libraries=/usr/lib/x86_64-linux-gnu --with-psrxml-dir=$PSRXML/install --enable-shared --enable-static F77=gfortran LDFLAGS="-L"$PSRXML"/install/lib" LIBS="-lpsrxml -lxml2" && \
     make -j $(nproc) && \
     make && \
     make install
@@ -417,79 +418,79 @@ WORKDIR $HOME
 RUN wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/psrchive/.psrchive.cfg
 
 
-## SOFA C-library
-#ENV SOFA $PSRHOME/sofa
-#ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$SOFA/20160503_a/c/install/include
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$SOFA/20160503_a/c/install/lib
-#WORKDIR $SOFA/20160503_a/c/src
-#RUN sed -i 's|INSTALL_DIR = $(HOME)|INSTALL_DIR = $(SOFA)/20160503_a/c/install|g' makefile && \
-#    make && \
-#    make test
-#
-#
-## SOFA FORTRAN-library
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$SOFA/20160503_a/f77/install/lib
-#WORKDIR $SOFA/20160503_a/f77/src
-#RUN sed -i 's|INSTALL_DIR = $(HOME)|INSTALL_DIR = $(SOFA)/20160503_a/f77/install|g' makefile && \
-#    make && \
-#    make test
-#
-#
-## SIGPROC
-#ENV SIGPROC $PSRHOME/sigproc
-#ENV PATH $PATH:$SIGPROC/install/bin
-#ENV FC gfortran
-#ENV F77 gfortran
-#ENV CC gcc
-#ENV CXX g++
-#WORKDIR $SIGPROC
-#RUN ./bootstrap && \
-#    ./configure --prefix=$SIGPROC/install --x-libraries=/usr/lib/x86_64-linux-gnu --enable-shared LDFLAGS="-L"$TEMPO2"/lib" LIBS="-ltempo2" && \
-#    make && \
-#    make install
-#
-#
-## sigpyproc
-#ENV SIGPYPROC $PSRHOME/sigpyproc
-#ENV PYTHONPATH $PYTHONPATH:$SIGPYPROC/lib/python
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$SIGPYPROC/lib/c
-#WORKDIR $PSRHOME/sigpyproc
-#RUN python setup.py install --record list.txt
-#
-#
-## szlib
-#ENV SZIP $PSRHOME/szip-2.1
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$SZIP/install/lib
-#ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$SZIP/install/include
-#WORKDIR $SZIP
-#RUN ./configure --prefix=$SZIP/install && \
-#    make && \
-#    make install
-#
-#
-## h5check
-#ENV H5CHECK $PSRHOME/h5check-2.0.1
-#ENV PATH $PATH:$H5CHECK/install/bin
-#WORKDIR $H5CHECK
-#RUN ./configure --prefix=$H5CHECK/install && \
-#    make && \
-#    make install
-#
-#
-## DAL
-#ENV DAL $PSRHOME/DAL
-#ENV PATH $PATH:$DAL/install/bin
-#ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$DAL/install/include
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$DAL/install/lib
-#WORKDIR $DAL
-#RUN mkdir build
-#WORKDIR $DAL/build
-#RUN cmake .. -DCMAKE_INSTALL_PREFIX=$DAL/install && \
-#    make -j $(nproc) && \
-#    make && \
-#    make install
-#
-#
+# SOFA C-library
+ENV SOFA $PSRHOME/sofa
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$SOFA/20160503_a/c/install/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$SOFA/20160503_a/c/install/lib
+WORKDIR $SOFA/20160503_a/c/src
+RUN sed -i 's|INSTALL_DIR = $(HOME)|INSTALL_DIR = $(SOFA)/20160503_a/c/install|g' makefile && \
+    make && \
+    make test
+
+
+# SOFA FORTRAN-library
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$SOFA/20160503_a/f77/install/lib
+WORKDIR $SOFA/20160503_a/f77/src
+RUN sed -i 's|INSTALL_DIR = $(HOME)|INSTALL_DIR = $(SOFA)/20160503_a/f77/install|g' makefile && \
+    make && \
+    make test
+
+
+# SIGPROC
+ENV SIGPROC $PSRHOME/sigproc
+ENV PATH $PATH:$SIGPROC/install/bin
+ENV FC gfortran
+ENV F77 gfortran
+ENV CC gcc
+ENV CXX g++
+WORKDIR $SIGPROC
+RUN ./bootstrap && \
+    ./configure --prefix=$SIGPROC/install --x-libraries=/usr/lib/x86_64-linux-gnu --enable-shared LDFLAGS="-L"$TEMPO2"/lib" LIBS="-ltempo2" && \
+    make && \
+    make install
+
+
+# sigpyproc
+ENV SIGPYPROC $PSRHOME/sigpyproc
+ENV PYTHONPATH $PYTHONPATH:$SIGPYPROC/lib/python
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$SIGPYPROC/lib/c
+WORKDIR $PSRHOME/sigpyproc
+RUN python setup.py install --record list.txt
+
+
+# szlib
+ENV SZIP $PSRHOME/szip-2.1
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$SZIP/install/lib
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$SZIP/install/include
+WORKDIR $SZIP
+RUN ./configure --prefix=$SZIP/install && \
+    make && \
+    make install
+
+
+# h5check
+ENV H5CHECK $PSRHOME/h5check-2.0.1
+ENV PATH $PATH:$H5CHECK/install/bin
+WORKDIR $H5CHECK
+RUN ./configure --prefix=$H5CHECK/install && \
+    make && \
+    make install
+
+
+# DAL
+ENV DAL $PSRHOME/DAL
+ENV PATH $PATH:$DAL/install/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$DAL/install/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$DAL/install/lib
+WORKDIR $DAL
+RUN mkdir build
+WORKDIR $DAL/build
+RUN cmake .. -DCMAKE_INSTALL_PREFIX=$DAL/install && \
+    make -j $(nproc) && \
+    make && \
+    make install
+
+
 ## DSPSR
 #ENV DSPSR $PSRHOME/dspsr
 #ENV PATH $PATH:$DSPSR/install/bin
