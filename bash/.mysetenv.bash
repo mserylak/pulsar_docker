@@ -211,20 +211,20 @@ export PATH=$PATH:$CASACORE/build/install/bin
 export C_INCLUDE_PATH=$C_INCLUDE_PATH:$CASACORE/build/install/include
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CASACORE/build/install/lib
 
-## python-casacore
-#export PYTHON_CASACORE=$PSRHOME/python-casacore
+# python-casacore
+export PYTHON_CASACORE=$PSRHOME/python-casacore
 
-## makems
-#export MAKEMS=$PSRHOME/makems
-#export PATH=$PATH:$MAKEMS/LOFAR/installed/gnu_opt/bin
-#export C_INCLUDE_PATH=$C_INCLUDE_PATH:$MAKEMS/LOFAR/installed/gnu_opt/LOFAR/installed/gnu_opt/include
-#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MAKEMS/LOFAR/installed/gnu_opt/lib64
+# makems
+export MAKEMS=$PSRHOME/makems
+export PATH=$PATH:$MAKEMS/LOFAR/installed/gnu_opt/bin
+export C_INCLUDE_PATH=$C_INCLUDE_PATH:$MAKEMS/LOFAR/installed/gnu_opt/LOFAR/installed/gnu_opt/include
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MAKEMS/LOFAR/installed/gnu_opt/lib64
 
-## wsclean
-#export WSCLEAN=$PSRHOME/wsclean-1.12
-#export PATH=$PATH:$WSCLEAN/build/install/bin
-#export C_INCLUDE_PATH=$C_INCLUDE_PATH:$WSCLEAN/build/install/include
-#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$WSCLEAN/build/install/lib
+# wsclean
+export WSCLEAN=$PSRHOME/wsclean-1.12
+export PATH=$PATH:$WSCLEAN/build/install/bin
+export C_INCLUDE_PATH=$C_INCLUDE_PATH:$WSCLEAN/build/install/include
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$WSCLEAN/build/install/lib
 
 # coast_guard
 export COAST_GUARD=$PSRHOME/coast_guard
