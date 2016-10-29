@@ -700,55 +700,55 @@ RUN cmake .. -DCMAKE_INSTALL_PREFIX=$CASACORE/build/install -DCMAKE_BUILD_PYTHON
     make install
 
 
-## python-casacore
-#ENV PYTHON_CASACORE $PSRHOME/python-casacore
-#WORKDIR $PYTHON_CASACORE
-## This is a workaround as install complains about installing in non-specific directory.
-#RUN mv setup.py setup.py_ORIGINAL && \
-#    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/python-casacore/setup.py
-#USER root
-#RUN python setup.py install --record list.txt
-#USER psr
-#
-#
-## makems
-#ENV MAKEMS $PSRHOME/makems
-#ENV PATH $PATH:$MAKEMS/LOFAR/installed/gnu_opt/bin
-#ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$MAKEMS/LOFAR/installed/gnu_opt/LOFAR/installed/gnu_opt/include
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$MAKEMS/LOFAR/installed/gnu_opt/lib64
-#WORKDIR $MAKEMS/LOFAR
-#RUN mkdir -p $MAKEMS/LOFAR/build/gnu_opt
-#WORKDIR $MAKEMS/LOFAR/build/gnu_opt
-#RUN cmake -DCMAKE_MODULE_PATH:PATH=$MAKEMS/LOFAR/CMake -DUSE_LOG4CPLUS=OFF -DBUILD_TESTING=OFF ../.. && \
-#    make && \
-#    make install
-#
-#
-## wsclean
-#ENV WSCLEAN $PSRHOME/wsclean-1.12
-#ENV PATH $PATH:$WSCLEAN/build/install/bin
-#ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$WSCLEAN/build/install/include
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$WSCLEAN/build/install/lib
-#WORKDIR $WSCLEAN
-#RUN mkdir build
-#WORKDIR $WSCLEAN/build
-#RUN cmake .. -DCMAKE_INSTALL_PREFIX=$WSCLEAN/build/install && \
-#    make && \
-#    make install
-#
-#
-## coast_guard
-#ENV COAST_GUARD $PSRHOME/coast_guard
-#ENV PATH $PATH:$COAST_GUARD:$COAST_GUARD/coast_guard
-#ENV COASTGUARD_CFG $COAST_GUARD/configurations
-#ENV PYTHONPATH $PYTHONPATH:$COAST_GUARD:$COAST_GUARD/coast_guard
-#
-#
-## Clean downloaded source codes
-#WORKDIR $PSRHOME
-#RUN rm -rf ./*.bz2 ./*.gz ./*.xz ./*.ztar ./*.zip
-#
-#
+# python-casacore
+ENV PYTHON_CASACORE $PSRHOME/python-casacore
+WORKDIR $PYTHON_CASACORE
+# This is a workaround as install complains about installing in non-specific directory.
+RUN mv setup.py setup.py_ORIGINAL && \
+    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/python-casacore/setup.py
+USER root
+RUN python setup.py install --record list.txt
+USER psr
+
+
+# makems
+ENV MAKEMS $PSRHOME/makems
+ENV PATH $PATH:$MAKEMS/LOFAR/installed/gnu_opt/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$MAKEMS/LOFAR/installed/gnu_opt/LOFAR/installed/gnu_opt/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$MAKEMS/LOFAR/installed/gnu_opt/lib64
+WORKDIR $MAKEMS/LOFAR
+RUN mkdir -p $MAKEMS/LOFAR/build/gnu_opt
+WORKDIR $MAKEMS/LOFAR/build/gnu_opt
+RUN cmake -DCMAKE_MODULE_PATH:PATH=$MAKEMS/LOFAR/CMake -DUSE_LOG4CPLUS=OFF -DBUILD_TESTING=OFF ../.. && \
+    make && \
+    make install
+
+
+# wsclean
+ENV WSCLEAN $PSRHOME/wsclean-1.12
+ENV PATH $PATH:$WSCLEAN/build/install/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$WSCLEAN/build/install/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$WSCLEAN/build/install/lib
+WORKDIR $WSCLEAN
+RUN mkdir build
+WORKDIR $WSCLEAN/build
+RUN cmake .. -DCMAKE_INSTALL_PREFIX=$WSCLEAN/build/install && \
+    make && \
+    make install
+
+
+# coast_guard
+ENV COAST_GUARD $PSRHOME/coast_guard
+ENV PATH $PATH:$COAST_GUARD:$COAST_GUARD/coast_guard
+ENV COASTGUARD_CFG $COAST_GUARD/configurations
+ENV PYTHONPATH $PYTHONPATH:$COAST_GUARD:$COAST_GUARD/coast_guard
+
+
+# Clean downloaded source codes
+WORKDIR $PSRHOME
+RUN rm -rf ./*.bz2 ./*.gz ./*.xz ./*.ztar ./*.zip
+
+
 # Update database for locate and run sshd server and expose port 22
 USER root
 RUN updatedb
