@@ -504,188 +504,188 @@ RUN ./bootstrap && \
     make install
 
 
-## clig
-#ENV CLIG $PSRHOME/clig
-#ENV PATH $PATH:$CLIG/instal/bin
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$CLIG/instal/lib
-#WORKDIR $CLIG
-#RUN sed -i 's|prefix =/usr|prefix=$(CLIG)/instal|g' makefile && \
-#    make && \
-#    make install
-#
-#
-## CLooG
-#ENV CLOOG $PSRHOME/cloog-0.18.4
-#ENV PATH $PATH:$CLOOG/install/bin
-#ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$CLOOG/install/include
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$CLOOG/install/lib
-#WORKDIR $CLOOG
-#RUN ./configure --prefix=$CLOOG/install && \
-#    make && \
-#    make install
-#
-#
-## Ctags
-#ENV CTAGS $PSRHOME/ctags-5.8
-#ENV PATH $PATH:$CTAGS/install/bin
-#WORKDIR $CTAGS
-#RUN ./configure --prefix=$CTAGS/install && \
-#    make && \
-#    make install
-#
-#
-## GeographicLib
-#ENV GEOLIB $PSRHOME/GeographicLib-1.46
-#ENV PATH $PATH:$GEOLIB/install/bin
-#ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$GEOLIB/install/include
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$GEOLIB/install/lib
-#ENV PYTHONPATH $PYTHONPATH:$GEOLIB/install/lib/python/site-packages
-#WORKDIR $GEOLIB
-#RUN ./configure --prefix=$GEOLIB/install && \
-#    make && \
-#    make install
-#
-#
-## h5edit
-#ENV H5EDIT $PSRHOME/h5edit-1.3.1
-#ENV PATH $PATH:$H5EDIT/install/bin
-#WORKDIR $H5EDIT
-#RUN ./configure --prefix=$H5EDIT/install CFLAGS="-Doff64_t=__off64_t" LDFLAGS="-L/usr/lib/x86_64-linux-gnu/hdf5/serial" LIBS="-lhdf5 -lhdf5_hl" CPPFLAGS=-I/usr/include/hdf5/serial && \
-#    make && \
-#    make install
-#
-#
-## Leptonica
-#ENV LEPTONICA $PSRHOME/leptonica-1.73
-#ENV PATH $PATH:$LEPTONICA/install/bin
-#ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$LEPTONICA/install/include
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$LEPTONICA/install/lib
-#WORKDIR $LEPTONICA
-#RUN ./configure --prefix=$LEPTONICA/install && \
-#    make && \
-#    make install
-#
-#
-## tvmet
-#ENV TVMET $PSRHOME/tvmet-1.7.2
-#ENV PATH $PATH:$TVMET/install/bin
-#ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$TVMET/install/include
-#WORKDIR $TVMET
-#RUN ./configure --prefix=$TVMET/install && \
-#    make && \
-#    make install
-#
-#
-## FFTW2
-#ENV FFTW2 $PSRHOME/fftw-2.1.5
-#ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$FFTW2/install/include
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$FFTW2/install/lib
-#WORKDIR $FFTW2
-#RUN ./configure --prefix=$FFTW2/install --enable-threads --enable-float && \
-#    make -j $(nproc) && \
-#    make && \
-#    make install
-#
-#
-## fitsverify
-#ENV FITSVERIFY $PSRHOME/fitsverify
-#ENV PATH $PATH:$FITSVERIFY
-#WORKDIR $FITSVERIFY
-#RUN gcc -o fitsverify ftverify.c fvrf_data.c fvrf_file.c fvrf_head.c fvrf_key.c fvrf_misc.c -DSTANDALONE -I/usr/include -L/usr/lib/x86_64-linux-gnu -lcfitsio -lm -lnsl
-#
-#
-## PSRSALSA
-#ENV PSRSALSA $PSRHOME/psrsalsa
-#ENV PATH $PATH:$PSRSALSA/bin
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRSALSA/src/lib
-#WORKDIR $PSRSALSA
-#RUN make
-#
-#
-## pypsrfits
-#ENV PYPSRFITS $PSRHOME/pypsrfits
-#ENV PYTHONPATH $PYTHONPATH:PYPSRFITS/install
-#WORKDIR $PYPSRFITS
-#RUN python setup.py install --record list.txt --prefix=$PYPSRFITS/install
-#
-#
-## PRESTO
-#ENV PRESTO $PSRHOME/presto
-#ENV PATH $PATH:$PRESTO/bin
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PRESTO/lib
-#ENV PYTHONPATH $PYTHONPATH:$PRESTO/lib/python
-#WORKDIR $PRESTO/src
-## RUN make makewisdom
-#RUN make prep && \
-#    make
-#WORKDIR $PRESTO/python/ppgplot_src
-#RUN mv _ppgplot.c _ppgplot.c_ORIGINAL && \
-#    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/ppgplot/_ppgplot.c
-#WORKDIR $PRESTO/python
-#RUN make
-#
-#
-## wapp2psrfits
-#ENV WAPP2PSRFITS $PSRHOME/wapp2psrfits
-#ENV PATH $PATH:$WAPP2PSRFITS
-#WORKDIR $WAPP2PSRFITS
-#RUN make
-#
-#
-## psrfits2psrfits
-#ENV PSRFITS2PSRFITS $PSRHOME/psrfits2psrfits
-#ENV PATH $PATH:$PSRFITS2PSRFITS
-#WORKDIR $PSRFITS2PSRFITS
-#RUN make
-#
-#
-## psrfits_utils
-#ENV PSRFITS_UTILS $PSRHOME/psrfits_utils
-#ENV PATH $PATH:$PSRFITS_UTILS/install/bin
-#ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$PSRFITS_UTILS/install/include
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRFITS_UTILS/install/lib
-#WORKDIR $PSRFITS_UTILS
-#RUN sed -i 's|-Werror foreign|-Werror foreign -Wno-extra-portability|g' configure.ac && \
-#    ./prepare && \
-#    ./configure --prefix=$PSRFITS_UTILS/install && \
-#    make && \
-#    make install
-#
-#
-## pyslalib
-#ENV PYSLALIB $PSRHOME/pyslalib
-#ENV PYTHONPATH $PYTHONPATH:PYSLALIB/install
-#WORKDIR $PYSLALIB
-#RUN python setup.py install --record list.txt --prefix=$PYSLALIB/install
-#
-#
-## Vpsr
-#ENV VPSR $PSRHOME/Vpsr
-#ENV PATH $PATH:$VPSR
-#
-#
-## GPy
-#ENV GPY $PSRHOME/GPy
-#ENV PATH $PATH:$GPY
-#WORKDIR $GPY
-## This is a workaround as install complains about installing in non-specific directory.
-#USER root
-#RUN python setup.py install --record list.txt
-#USER psr
-#
-#
-## casacore measures_data
-#ENV MEASURES_DATA $PSRHOME/measures_data
-#WORKDIR $PSRHOME
-#RUN mkdir measures_data
-#RUN tar -xvvf WSRT_Measures.ztar -C $MEASURES_DATA
-#
-#
-## casa
-#ENV CASA $PSRHOME/casa-release-4.6.0-el6
-#ENV PATH $PATH:$CASA/bin
-#
-#
+# clig
+ENV CLIG $PSRHOME/clig
+ENV PATH $PATH:$CLIG/instal/bin
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$CLIG/instal/lib
+WORKDIR $CLIG
+RUN sed -i 's|prefix =/usr|prefix=$(CLIG)/instal|g' makefile && \
+    make && \
+    make install
+
+
+# CLooG
+ENV CLOOG $PSRHOME/cloog-0.18.4
+ENV PATH $PATH:$CLOOG/install/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$CLOOG/install/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$CLOOG/install/lib
+WORKDIR $CLOOG
+RUN ./configure --prefix=$CLOOG/install && \
+    make && \
+    make install
+
+
+# Ctags
+ENV CTAGS $PSRHOME/ctags-5.8
+ENV PATH $PATH:$CTAGS/install/bin
+WORKDIR $CTAGS
+RUN ./configure --prefix=$CTAGS/install && \
+    make && \
+    make install
+
+
+# GeographicLib
+ENV GEOLIB $PSRHOME/GeographicLib-1.46
+ENV PATH $PATH:$GEOLIB/install/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$GEOLIB/install/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$GEOLIB/install/lib
+ENV PYTHONPATH $PYTHONPATH:$GEOLIB/install/lib/python/site-packages
+WORKDIR $GEOLIB
+RUN ./configure --prefix=$GEOLIB/install && \
+    make && \
+    make install
+
+
+# h5edit
+ENV H5EDIT $PSRHOME/h5edit-1.3.1
+ENV PATH $PATH:$H5EDIT/install/bin
+WORKDIR $H5EDIT
+RUN ./configure --prefix=$H5EDIT/install CFLAGS="-Doff64_t=__off64_t" LDFLAGS="-L/usr/lib/x86_64-linux-gnu/hdf5/serial" LIBS="-lhdf5 -lhdf5_hl" CPPFLAGS=-I/usr/include/hdf5/serial && \
+    make && \
+    make install
+
+
+# Leptonica
+ENV LEPTONICA $PSRHOME/leptonica-1.73
+ENV PATH $PATH:$LEPTONICA/install/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$LEPTONICA/install/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$LEPTONICA/install/lib
+WORKDIR $LEPTONICA
+RUN ./configure --prefix=$LEPTONICA/install && \
+    make && \
+    make install
+
+
+# tvmet
+ENV TVMET $PSRHOME/tvmet-1.7.2
+ENV PATH $PATH:$TVMET/install/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$TVMET/install/include
+WORKDIR $TVMET
+RUN ./configure --prefix=$TVMET/install && \
+    make && \
+    make install
+
+
+# FFTW2
+ENV FFTW2 $PSRHOME/fftw-2.1.5
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$FFTW2/install/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$FFTW2/install/lib
+WORKDIR $FFTW2
+RUN ./configure --prefix=$FFTW2/install --enable-threads --enable-float && \
+    make -j $(nproc) && \
+    make && \
+    make install
+
+
+# fitsverify
+ENV FITSVERIFY $PSRHOME/fitsverify
+ENV PATH $PATH:$FITSVERIFY
+WORKDIR $FITSVERIFY
+RUN gcc -o fitsverify ftverify.c fvrf_data.c fvrf_file.c fvrf_head.c fvrf_key.c fvrf_misc.c -DSTANDALONE -I/usr/include -L/usr/lib/x86_64-linux-gnu -lcfitsio -lm -lnsl
+
+
+# PSRSALSA
+ENV PSRSALSA $PSRHOME/psrsalsa
+ENV PATH $PATH:$PSRSALSA/bin
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRSALSA/src/lib
+WORKDIR $PSRSALSA
+RUN make
+
+
+# pypsrfits
+ENV PYPSRFITS $PSRHOME/pypsrfits
+ENV PYTHONPATH $PYTHONPATH:PYPSRFITS/install
+WORKDIR $PYPSRFITS
+RUN python setup.py install --record list.txt --prefix=$PYPSRFITS/install
+
+
+# PRESTO
+ENV PRESTO $PSRHOME/presto
+ENV PATH $PATH:$PRESTO/bin
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PRESTO/lib
+ENV PYTHONPATH $PYTHONPATH:$PRESTO/lib/python
+WORKDIR $PRESTO/src
+# RUN make makewisdom
+RUN make prep && \
+    make
+WORKDIR $PRESTO/python/ppgplot_src
+RUN mv _ppgplot.c _ppgplot.c_ORIGINAL && \
+    wget https://raw.githubusercontent.com/mserylak/pulsar_docker/master/ppgplot/_ppgplot.c
+WORKDIR $PRESTO/python
+RUN make
+
+
+# wapp2psrfits
+ENV WAPP2PSRFITS $PSRHOME/wapp2psrfits
+ENV PATH $PATH:$WAPP2PSRFITS
+WORKDIR $WAPP2PSRFITS
+RUN make
+
+
+# psrfits2psrfits
+ENV PSRFITS2PSRFITS $PSRHOME/psrfits2psrfits
+ENV PATH $PATH:$PSRFITS2PSRFITS
+WORKDIR $PSRFITS2PSRFITS
+RUN make
+
+
+# psrfits_utils
+ENV PSRFITS_UTILS $PSRHOME/psrfits_utils
+ENV PATH $PATH:$PSRFITS_UTILS/install/bin
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$PSRFITS_UTILS/install/include
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRFITS_UTILS/install/lib
+WORKDIR $PSRFITS_UTILS
+RUN sed -i 's|-Werror foreign|-Werror foreign -Wno-extra-portability|g' configure.ac && \
+    ./prepare && \
+    ./configure --prefix=$PSRFITS_UTILS/install && \
+    make && \
+    make install
+
+
+# pyslalib
+ENV PYSLALIB $PSRHOME/pyslalib
+ENV PYTHONPATH $PYTHONPATH:PYSLALIB/install
+WORKDIR $PYSLALIB
+RUN python setup.py install --record list.txt --prefix=$PYSLALIB/install
+
+
+# Vpsr
+ENV VPSR $PSRHOME/Vpsr
+ENV PATH $PATH:$VPSR
+
+
+# GPy
+ENV GPY $PSRHOME/GPy
+ENV PATH $PATH:$GPY
+WORKDIR $GPY
+# This is a workaround as install complains about installing in non-specific directory.
+USER root
+RUN python setup.py install --record list.txt
+USER psr
+
+
+# casacore measures_data
+ENV MEASURES_DATA $PSRHOME/measures_data
+WORKDIR $PSRHOME
+RUN mkdir measures_data
+RUN tar -xvvf WSRT_Measures.ztar -C $MEASURES_DATA
+
+
+# casa
+ENV CASA $PSRHOME/casa-release-4.6.0-el6
+ENV PATH $PATH:$CASA/bin
+
+
 ## casacore
 #ENV CASACORE $PSRHOME/casacore
 #ENV PATH $PATH:$CASACORE/build/install/bin
