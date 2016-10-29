@@ -409,7 +409,6 @@ ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$PSRCHIVE/install/lib
 ENV PYTHONPATH $PYTHONPATH:$PSRCHIVE/install/lib/python2.7/site-packages
 WORKDIR $PSRCHIVE
 RUN ./bootstrap && \
-#    ./configure --prefix=$PSRCHIVE/install --x-libraries=/usr/lib/x86_64-linux-gnu --with-psrxml-dir=$PSRXML/install --enable-shared --enable-static F77=gfortran LIBS="-lpsrxml -lxml2" && \
     ./configure --prefix=$PSRCHIVE/install --x-libraries=/usr/lib/x86_64-linux-gnu --with-psrxml-dir=$PSRXML/install --enable-shared --enable-static F77=gfortran LDFLAGS="-L"$PSRXML"/install/lib" LIBS="-lpsrxml -lxml2" && \
     make -j $(nproc) && \
     make && \
@@ -491,20 +490,20 @@ RUN cmake .. -DCMAKE_INSTALL_PREFIX=$DAL/install && \
     make install
 
 
-## DSPSR
-#ENV DSPSR $PSRHOME/dspsr
-#ENV PATH $PATH:$DSPSR/install/bin
-#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$DSPSR/install/lib
-#ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$DSPSR/install/include
-#WORKDIR $DSPSR
-#RUN ./bootstrap && \
-#    echo "lump fits sigproc lofar_dal puma2" > backends.list && \
-#    ./configure --prefix=$DSPSR/install --x-libraries=/usr/lib/x86_64-linux-gnu --enable-shared CPPFLAGS="-I"$DAL"/install/include -I/usr/include/hdf5/serial" LDFLAGS="-L"$DAL"/install/lib -L/usr/lib/x86_64-linux-gnu/hdf5/serial" LIBS="-lpgplot -lcpgplot" && \
-#    make -j $(nproc) && \
-#    make && \
-#    make install
-#
-#
+# DSPSR
+ENV DSPSR $PSRHOME/dspsr
+ENV PATH $PATH:$DSPSR/install/bin
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$DSPSR/install/lib
+ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$DSPSR/install/include
+WORKDIR $DSPSR
+RUN ./bootstrap && \
+    echo "apsr asp bcpm bpsr caspsr cpsr cpsr2 dummy fits kat lbadr lbadr64 lofar_dal lump lwa puma2 sigproc ska1" > backends.list && \
+    ./configure --prefix=$DSPSR/install --x-libraries=/usr/lib/x86_64-linux-gnu CPPFLAGS="-I"$DAL"/install/include -I/usr/include/hdf5/serial" LDFLAGS="-L"$DAL"/install/lib -L/usr/lib/x86_64-linux-gnu/hdf5/serial -L"$PSRXML"/install/lib" LIBS="-lpgplot -lcpgplot -lpsrxml -lxml2" && \
+    make -j $(nproc) && \
+    make && \
+    make install
+
+
 ## clig
 #ENV CLIG $PSRHOME/clig
 #ENV PATH $PATH:$CLIG/instal/bin
