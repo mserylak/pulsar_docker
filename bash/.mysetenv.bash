@@ -14,7 +14,7 @@ export HISTFILE=$HOME/.bash_eternal_history
 export HISTFILESIZE=
 export HISTSIZE=
 export HISTCONTROL=ignoreboth
-export HISTIGNORE="l:ll:lt:ls:bg:fg:mc:history::ls -lah:..:ls -l;ls -lh;lt;la"
+export HISTIGNORE="l:ll:lt:ls:bg:fg:mc:history:ls -lah:..:ls -l;ls -lh;lt;la"
 export HISTTIMEFORMAT="%F %T "
 export PROMPT_COMMAND="history -a"
 bind '"\e[A":history-search-backward'
@@ -198,18 +198,18 @@ export PATH=$PATH:$VPSR
 export GPY=$PSRHOME/GPy
 export PATH=$PATH:$GPY
 
-## casacore measures_data
-#export MEASURES_DATA=$PSRHOME/measures_data
+# casacore measures_data
+export MEASURES_DATA=$PSRHOME/measures_data
 
-## casa
-#export CASA=$PSRHOME/casa-release-4.6.0-el6
-#export PATH=$PATH:$PSRHOME/casa-release-4.6.0-el6/bin
+# casa
+export CASA=$PSRHOME/casa-release-4.6.0-el6
+export PATH=$PATH:$PSRHOME/casa-release-4.6.0-el6/bin
 
-## casacore
-#export CASACORE=$PSRHOME/casacore
-#export PATH=$PATH:$CASACORE/build/install/bin
-#export C_INCLUDE_PATH=$C_INCLUDE_PATH:$CASACORE/build/install/include
-#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CASACORE/build/install/lib
+# casacore
+export CASACORE=$PSRHOME/casacore
+export PATH=$PATH:$CASACORE/build/install/bin
+export C_INCLUDE_PATH=$C_INCLUDE_PATH:$CASACORE/build/install/include
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CASACORE/build/install/lib
 
 ## python-casacore
 #export PYTHON_CASACORE=$PSRHOME/python-casacore
@@ -231,4 +231,3 @@ export COAST_GUARD=$PSRHOME/coast_guard
 export PATH=$PATH:$COAST_GUARD:$COAST_GUARD/coast_guard
 export COASTGUARD_CFG=$COAST_GUARD/configurations
 export PYTHONPATH=$PYTHONPATH:$COAST_GUARD:$COAST_GUARD/coast_guard
-
