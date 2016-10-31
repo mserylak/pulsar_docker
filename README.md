@@ -8,6 +8,7 @@ Builds a docker image for a pulsar analysis packages and few extras on Ubuntu 16
 - psrcat
 - tempo
 - tempo2
+- psrxml
 - psrchive
 - sofa c-library
 - sofa fortran-library
@@ -16,7 +17,7 @@ Builds a docker image for a pulsar analysis packages and few extras on Ubuntu 16
 - h5check
 - dal
 - dspsr
-- GeographicLib
+- geographicLib
 - h5edit
 - fitsverify
 - psrsalsa
@@ -28,6 +29,11 @@ Builds a docker image for a pulsar analysis packages and few extras on Ubuntu 16
 - pyslalib
 - vpsr
 - gpy
+- casa
+- casacore
+- python-casacore
+- makems
+- wsclean
 - coast_guard
 - setuptools
 - numpy
