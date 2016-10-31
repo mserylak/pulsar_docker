@@ -207,9 +207,6 @@ export PATH=$PATH:$PSRHOME/casa-release-4.6.0-el6/bin
 
 # casacore
 export CASACORE=$PSRHOME/casacore
-export PATH=$PATH:$CASACORE/build/install/bin
-export C_INCLUDE_PATH=$C_INCLUDE_PATH:$CASACORE/build/install/include
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CASACORE/build/install/lib
 
 # python-casacore
 export PYTHON_CASACORE=$PSRHOME/python-casacore

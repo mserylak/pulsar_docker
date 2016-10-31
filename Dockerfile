@@ -670,7 +670,8 @@ ENV PATH $PATH:$GPY
 WORKDIR $GPY
 # This is a workaround as install complains about installing in non-specific directory.
 USER root
-RUN python setup.py install --record list.txt
+RUN python setup.py install --record list.txt && \
+    chown -R psr:psr $HOME/.config
 USER psr
 
 
@@ -688,16 +689,20 @@ ENV PATH $PATH:$CASA/bin
 
 # casacore
 ENV CASACORE $PSRHOME/casacore
-ENV PATH $PATH:$CASACORE/build/install/bin
-ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$CASACORE/build/install/include
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$CASACORE/build/install/lib
+#ENV PATH $PATH:$CASACORE/build/install/bin
+#ENV C_INCLUDE_PATH $C_INCLUDE_PATH:$CASACORE/build/install/include
+#ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$CASACORE/build/install/lib
 WORKDIR $CASACORE
 RUN mkdir build
 WORKDIR $CASACORE/build
-RUN cmake .. -DCMAKE_INSTALL_PREFIX=$CASACORE/build/install -DCMAKE_BUILD_PYTHON=ON -DCMAKE_BUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TESTING=ON -DCMAKE_CASA_BUILD=ON -DCMAKE_CMAKE_BUILD_TYPE=Release -DCMAKE_ENABLE_SHARED=ON -DCMAKE_USE_FFTW3=ON -DCMAKE_USE_HDF5=ON -DCMAKE_USE_OPENMP=ON -DCMAKE_USE_STACKTRACE=ON -DCMAKE_USE_THREADS=ON && \
+RUN cmake .. -DCMAKE_BUILD_PYTHON=ON -DCMAKE_BUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TESTING=ON -DCMAKE_CASA_BUILD=ON -DCMAKE_CMAKE_BUILD_TYPE=Release -DCMAKE_ENABLE_SHARED=ON -DCMAKE_USE_FFTW3=ON -DCMAKE_USE_HDF5=ON -DCMAKE_USE_OPENMP=ON -DCMAKE_USE_STACKTRACE=ON -DCMAKE_USE_THREADS=ON -DCXX11=ON -DCMAKE_BUILD_TYPE=Release -DUSE_FFTW3=ON -DUSE_HDF5=ON -DUSE_OPENMP=ON -DUSE_STACKTRACE=ON -DUSE_THREADS=ON -DDATA_DIR=$MEASURES_DATA && \
     make -j $(nproc) && \
-    make && \
-    make install
+    make
+USER root
+RUN make install && \
+    ldconfig && \
+    updatedb
+USER psr
 
 
 # python-casacore
@@ -720,6 +725,8 @@ WORKDIR $MAKEMS/LOFAR
 RUN mkdir -p $MAKEMS/LOFAR/build/gnu_opt
 WORKDIR $MAKEMS/LOFAR/build/gnu_opt
 RUN cmake -DCMAKE_MODULE_PATH:PATH=$MAKEMS/LOFAR/CMake -DUSE_LOG4CPLUS=OFF -DBUILD_TESTING=OFF ../.. && \
+    sed -i "s|char\* h = strrchr(filename,'/');|const char\* h = strrchr(filename,'/');|g" $MAKEMS/LOFAR/LCS/Common/src/AddressTranslator.cc && \
+    make -j $(nproc) && \
     make && \
     make install
 
@@ -733,6 +740,7 @@ WORKDIR $WSCLEAN
 RUN mkdir build
 WORKDIR $WSCLEAN/build
 RUN cmake .. -DCMAKE_INSTALL_PREFIX=$WSCLEAN/build/install && \
+    make -j $(nproc) && \
     make && \
     make install
 
