@@ -27,8 +27,6 @@ Builds a docker image for a pulsar analysis packages and few extras on Ubuntu 16
 - psrfits2psrfits
 - psrfits_utils
 - pyslalib
-- vpsr
-- gpy
 - coast_guard
 - setuptools
 - numpy
