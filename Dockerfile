@@ -322,7 +322,7 @@ ENV PGPLOT_DIR="/usr/lib/pgplot5" \
     PGPLOT_INCLUDES="/usr/include" \
     PGPLOT_BACKGROUND="white" \
     PGPLOT_FOREGROUND="black" \
-    PGPLOT_DEV"=/xs"
+    PGPLOT_DEV="/xs"
 
 # calceph
 ENV CALCEPH=$PSRHOME"/calceph-2.3.2" \
@@ -899,6 +899,7 @@ RUN echo "" >> .bashrc && \
 
 # Update database for locate and run sshd server and expose port 22
 USER root
+RUN sed 's/X11Forwarding yes/X11Forwarding yes\nX11UseLocalhost no/' -i /etc/ssh/sshd_config
 RUN updatedb
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]
