@@ -262,7 +262,7 @@ RUN mkdir -p /home/psr/software
 
 # Downloading all source codes
 WORKDIR $PSRHOME
-RUN wget http://www.imcce.fr/fr/presentation/equipes/ASD/inpop/calceph/calceph-2.3.2.tar.gz && \
+RUN wget --no-check-certificate https://www.imcce.fr/content/medias/recherche/equipes/asd/calceph/calceph-2.3.2.tar.gz && \
     tar -xvvf calceph-2.3.2.tar.gz -C $PSRHOME && \
     wget http://ds9.si.edu/download/ubuntu14/ds9.ubuntu14.7.5.tar.gz && \
     mkdir $PSRHOME/ds9-7.5 && \
@@ -279,7 +279,7 @@ RUN wget http://www.imcce.fr/fr/presentation/equipes/ASD/inpop/calceph/calceph-2
     tar -xvvf szip-2.1.1.tar.gz && \
     wget https://www.hdfgroup.org/ftp/HDF5/tools/h5check/src/h5check-2.0.1.tar.gz && \
     tar -xvvf h5check-2.0.1.tar.gz && \
-    wget http://bsdforge.com/projects/source/devel/clig/clig-1.9.11.2.tar.xz && \
+    wget -U 'Linux' http://bsdforge.com/projects/source/devel/clig/clig-1.9.11.2.tar.xz && \
     tar -xvvf clig-1.9.11.2.tar.xz && \
     wget http://www.bastoul.net/cloog/pages/download/cloog-0.18.4.tar.gz && \
     tar -xvvf cloog-0.18.4.tar.gz && \
